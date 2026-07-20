@@ -1,20 +1,58 @@
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import SpeedIcon from "@mui/icons-material/Speed";
 import FolderIcon from "@mui/icons-material/Folder";
 import EventIcon from "@mui/icons-material/Event";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import SettingsIcon from "@mui/icons-material/Settings";
 
-export const navigation = [
+import { SvgIconComponent } from "@mui/icons-material";
+
+type ChildItem = {
+  title: string;
+  path: string;
+};
+
+export type NavigationItem = 
+  | {
+      title: string;
+      path: string;
+      icon: SvgIconComponent;
+      children?: never;
+    }
+  | {
+      title: string;
+      icon: SvgIconComponent;
+      children: ChildItem[];
+      path?: never;
+    };
+
+export const navigation: NavigationItem[] = [
   {
-    title: "Dashboard",
+    title: "Health-Checks",
     path: "/",
-    icon: DashboardIcon,
+    icon: SpeedIcon,
   },
   {
     title: "Projects",
-    path: "/projects",
     icon: FolderIcon,
+    children: [
+      {
+        title: "Nivaran",
+        path: "/projects/nivaran",
+      },
+      {
+        title: "CRM",
+        path: "/projects/crm",
+      },
+      {
+        title: "HRMS",
+        path: "/projects/hrms",
+      },
+      {
+        title: "Customer Portal",
+        path: "/projects/customer-portal",
+      },
+    ],
   },
   {
     title: "Events",

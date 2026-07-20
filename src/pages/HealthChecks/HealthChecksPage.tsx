@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
-import AppLayout from "../components/layout/AppLayout";
+import AppLayout from "../../components/layout/AppLayout";
 // import Typography from "@mui/material/Typography";
-import { getProjectStatus } from "../services/project.service";
-import PageTitle from "../components/common/PageTitle";
-import StatusChip from "../components/common/StatusChip";
-import SummaryCard from "../components/cards/SummaryCard";
+import { getProjectStatus } from "../../services/project.service";
+import PageTitle from "../../components/common/PageTitle";
+import StatusChip from "../../components/common/StatusChip";
+import SummaryCard from "../../components/cards/SummaryCard";
 import StorageIcon from "@mui/icons-material/Storage";
 import SpeedIcon from "@mui/icons-material/Speed";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import Grid from "@mui/material/Grid";
 
-export default function Dashboard() {
+export default function HealthChecksPage() {
   const [projects, setProjects] = useState<any[]>([]);
 
   const loadProjects = async () => {
@@ -38,7 +38,7 @@ export default function Dashboard() {
   return (
     <AppLayout>
       <PageTitle
-        title="Dashboard"
+        title="Health-Checks"
         subtitle="Real-time monitoring of all applications"
       />
       <div style={{ padding: "20px" }}>
