@@ -1,19 +1,28 @@
 import { useParams } from "react-router-dom";
-import PageTitle from "../../components/common/PageTitle";
+
 import AppLayout from "../../components/layout/AppLayout";
+
+import NivaranDashboard from "../../components/projects/NivaranDashboard";
+import RenewalDashboard from "../../components/projects/RenewalDashboard";
 
 const ProjectDetailsPage = () => {
   const { projectId } = useParams();
 
+  const renderProject = () => {
+    switch (projectId) {
+      case "nivaran":
+        return <NivaranDashboard />;
+      case "renewal":
+        return <RenewalDashboard />;
+
+      default:
+        return <h2>Project not found</h2>;
+    }
+  };
+
   return (
     <AppLayout>
-      <PageTitle
-        title="Projects"
-        subtitle="Real-time monitoring of all applications"
-      />
-      <div style={{ padding: "20px" }}>
-        <h2>{projectId}</h2>;
-      </div>
+      <div style={{ padding: "0px 20px 0px 20px" }}>{renderProject()}</div>
     </AppLayout>
   );
 };

@@ -8,23 +8,15 @@ interface Props {
 const StatsGrid = ({ children }: Props) => {
   return (
     <Grid container spacing={3}>
-      {Array.isArray(children)
-        ? children.map((child, index) => (
-            <Grid
-              key={index}
-              item
-              xs={12}
-              sm={6}
-              lg={3}
-            >
-              {child}
-            </Grid>
-          ))
-        : (
-          <Grid item xs={12}>
-            {children}
+      {Array.isArray(children) ? (
+        children.map((child, index) => (
+          <Grid key={index} size={{ xs: 12, sm: 6, lg: 3 }}>
+            {child}
           </Grid>
-        )}
+        ))
+      ) : (
+        <Grid size={{ xs: 12 }}>{children}</Grid>
+      )}
     </Grid>
   );
 };

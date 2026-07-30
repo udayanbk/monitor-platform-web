@@ -51,11 +51,8 @@ const LoginForm = () => {
 
       signIn(response.data.accessToken, response.data.user);
       navigate("/", { replace: true });
-
     } catch (error: any) {
-      setError(
-        error?.response?.data?.message ?? "Invalid Employee ID or Password",
-      );
+      setError(error?.response?.data?.message ?? "Invalid Employee ID or Password");
     } finally {
       setLoading(false);
     }
@@ -118,10 +115,7 @@ const LoginForm = () => {
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <IconButton
-                    edge="end"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
+                  <IconButton edge="end" onClick={() => setShowPassword(!showPassword)}>
                     {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
                   </IconButton>
                 </InputAdornment>
@@ -132,10 +126,7 @@ const LoginForm = () => {
           <Box width="100%">
             <FormControlLabel
               control={
-                <Checkbox
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                />
+                <Checkbox checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} />
               }
               label="Remember Me"
             />

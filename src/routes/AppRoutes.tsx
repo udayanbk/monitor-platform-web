@@ -41,7 +41,6 @@ const AppRoutes = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="/projects/:projectId" element={<ProjectDetailsPage />} />
       </Route>
-
     </Routes>
   );
 };

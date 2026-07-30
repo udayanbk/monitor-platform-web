@@ -7,9 +7,7 @@ interface Props {
 }
 
 const AuthProvider = ({ children }: Props) => {
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("accessToken")
-  );
+  const [token, setToken] = useState<string | null>(localStorage.getItem("accessToken"));
 
   const [user, setUser] = useState<User | null>(() => {
     const data = localStorage.getItem("user");

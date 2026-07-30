@@ -37,11 +37,7 @@ export default function Sidebar() {
       }}
     >
       <Toolbar>
-        <Typography
-          variant="h5"
-          color="primary"
-          sx={{ fontWeight: "bold" }}
-        >
+        <Typography variant="h5" color="primary" sx={{ fontWeight: "bold" }}>
           Monitor
         </Typography>
       </Toolbar>
@@ -67,18 +63,10 @@ export default function Sidebar() {
 
                     <ListItemText primary={item.title} />
 
-                    {openProjects ? (
-                      <ExpandLessIcon />
-                    ) : (
-                      <ExpandMoreIcon />
-                    )}
+                    {openProjects ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                   </ListItemButton>
 
-                  <Collapse
-                    in={openProjects}
-                    timeout="auto"
-                    unmountOnExit
-                  >
+                  <Collapse in={openProjects} timeout="auto" unmountOnExit>
                     <List component="div" disablePadding>
                       {item.children.map((child) => (
                         <ListItemButton

@@ -4,7 +4,7 @@ interface ComingSoonProps {
   title: string;
 }
 
-export default function ComingSoon ({ title }: ComingSoonProps) {
+export default function ComingSoon({ title }: ComingSoonProps) {
   return (
     <Box
       sx={{
@@ -19,13 +19,9 @@ export default function ComingSoon ({ title }: ComingSoonProps) {
         {title}
       </Typography>
 
-      <Typography
-        variant="body1"
-        color="text.secondary"
-        sx={{ mt: 2 }}
-      >
+      <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
         This module is under development.
       </Typography>
     </Box>
   );
-};
+}

@@ -12,7 +12,7 @@ type ChildItem = {
   path: string;
 };
 
-export type NavigationItem = 
+export type NavigationItem =
   | {
       title: string;
       path: string;
@@ -41,8 +41,8 @@ export const navigation: NavigationItem[] = [
         path: "/projects/nivaran",
       },
       {
-        title: "CRM",
-        path: "/projects/crm",
+        title: "Renewal",
+        path: "/projects/renewal",
       },
       {
         title: "HRMS",

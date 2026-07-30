@@ -16,14 +16,13 @@ export default function HealthChecksPage() {
 
   const loadProjects = async () => {
     const data = await getProjectStatus();
+    console.log("data", data);
 
-    const projectList = Object.entries(data).map(
-      ([projectName, details]: any) => ({
-        project: projectName,
-        ...details,
-      }),
-    );
-
+    const projectList = Object.entries(data.data).map(([projectName, details]: any) => ({
+      project: projectName,
+      ...details,
+    }));
+    console.log("projectList", projectList);
     setProjects(projectList);
   };
 
@@ -37,12 +36,41 @@ export default function HealthChecksPage() {
 
   return (
     <AppLayout>
-      <PageTitle
-        title="Health-Checks"
-        subtitle="Real-time monitoring of all applications"
-      />
+      <PageTitle title="Health-Checks" subtitle="Real-time monitoring of all applications" />
       <div style={{ padding: "20px" }}>
-        <h2>Monitor Platform</h2>
+        <table
+          border={1}
+          cellPadding={10}
+          cellSpacing={0}
+          style={{
+            borderCollapse: "collapse",
+            width: "100%",
+            marginBottom: "25px",
+            textAlign: "center",
+          }}
+        >
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Status</th>
+              <th>Response</th>
+              <th>Last Checked</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {projects.map((project) => (
+              <tr key={project.project}>
+                <td>{project.project}</td>
+                <td>
+                  <StatusChip status={project.status} />
+                </td>
+                <td>{project.status === "UP" ? project.responseTime + " ms" : "0 ms"}</td>
+                <td>{project.timestamp}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
             <SummaryCard
@@ -80,34 +108,6 @@ export default function HealthChecksPage() {
             />
           </Grid>
         </Grid>
-        <table
-          border={1}
-          cellPadding={10}
-          cellSpacing={0}
-          style={{ borderCollapse: "collapse", width: "100%" }}
-        >
-          <thead>
-            <tr>
-              <th>Project</th>
-              <th>Status</th>
-              <th>Response</th>
-              <th>Last Checked</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {projects.map((project) => (
-              <tr key={project.project}>
-                <td>{project.project}</td>
-                <td>
-                  <StatusChip status={project.health.status} />
-                </td>
-                <td>{project.health.responseTime} ms</td>
-                <td>{project.health.lastChecked}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </AppLayout>
   );

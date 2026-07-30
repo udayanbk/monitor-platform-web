@@ -1,12 +1,4 @@
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Box,
-  IconButton,
-  Menu,
-  MenuItem,
-} from "@mui/material";
+import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem } from "@mui/material";
 
 import RefreshIcon from "@mui/icons-material/Refresh";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
