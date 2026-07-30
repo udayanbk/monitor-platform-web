@@ -1,7 +1,5 @@
 import { Grid, Stack } from "@mui/material";
 
-// import SummarySection from "./SummarySection";
-// import ActivityCard from "./ActivityCard";
 import InvestigationSection from "./InvestigationSection";
 import { useEffect, useState } from "react";
 import { getPaymentStatus } from "../../../../services/renewalServices";

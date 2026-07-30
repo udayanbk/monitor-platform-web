@@ -1,10 +1,6 @@
 import { Grid, Paper } from "@mui/material";
-import TicketOverviewDonut from "../../../charts/TicketOverviewDonut";
-import TicketStatusBarChart from "../../../charts/TicketStatusBarChart";
-
-// interface Props {
-//   data: any;
-// }
+import TicketOverviewDonut from "../../charts/TicketOverviewDonut";
+import TicketStatusBarChart from "../../charts/TicketStatusBarChart";
 
 const ChartsSection = () => {
   return (

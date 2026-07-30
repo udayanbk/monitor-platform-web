@@ -1,14 +1,6 @@
 import { Grid, Stack } from "@mui/material";
-
-// import SummarySection from "./SummarySection";
-// import ActivityCard from "./ActivityCard";
-// import InvestigationSection from "./InvestigationSection";
 import { useEffect, useState } from "react";
-// import {  } from "../../../../services/renewalServices";
-// import { Summary } from "../../../common/Interfaces";
 import { getTicketStatistics } from "../../../../services/nivaran.service";
-// import ActivityCard from "../../RenewalDashboard/PaymentsDashboard/ActivityCard";
-// import SummarySection from "../../RenewalDashboard/PaymentsDashboard/SummarySection";
 import ActivityCard from "../../components/ActivityCard";
 import SummarySection from "../../components/SummarySection ";
 import { TicketActivity, TicketSummary } from "../../../common/Interfaces";
