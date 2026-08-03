@@ -8,14 +8,23 @@ interface SummaryCardProps {
   subtitle?: string;
   height?: number;
   icon?: ReactNode;
+  fullHeight?: boolean;
 }
 
-const SummaryCard = ({ title, value, subtitle, icon, height }: SummaryCardProps) => {
+const SummaryCard = ({
+  title,
+  value,
+  subtitle,
+  icon,
+  height,
+  fullHeight = false,
+}: SummaryCardProps) => {
   return (
     <Card
       elevation={2}
       sx={{
-        height: height ? `${height}%` : "100%",
+        height: fullHeight ? "100%" : height ? `${height}%` : "100%",
+        flex: fullHeight ? 1 : undefined,
         borderRadius: 3,
       }}
     >

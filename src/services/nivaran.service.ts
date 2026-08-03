@@ -5,3 +5,9 @@ export const getTicketStatistics = async () => {
   console.log("response-ticket", response);
   return response.data;
 };
+
+export const getPolicyStatistics = async () => {
+  const response = await api.get("/projects/nivaran/policy-statistics");
+  console.log("response-ticket", response);
+  return response.data;
+};

@@ -25,3 +25,10 @@ export interface TicketActivity {
   last24Hours: Record<string, number>;
   last30Days: Record<string, number>;
 }
+
+export interface PolicySummary {
+  totalSearched: number;
+  totalDownloads: number;
+  successPolicy: Record<string, number>;
+  failPolicy: Record<string, number>;
+}

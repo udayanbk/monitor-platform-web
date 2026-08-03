@@ -50,7 +50,7 @@ const PaymentsDashboard = () => {
                 value: summary?.Resolved ?? "--",
               },
             ]}
-            columns={"grow"}
+            columns={6}
           />
 
           {/* <InvestigationSection /> */}

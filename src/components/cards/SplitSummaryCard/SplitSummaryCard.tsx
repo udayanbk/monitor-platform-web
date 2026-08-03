@@ -3,11 +3,20 @@ import { Card, CardContent, Typography, Stack, Divider } from "@mui/material";
 interface SplitSummaryCardProps {
   title: string;
   data?: Record<string, number>;
+  fullHeight: boolean;
 }
 
-const SplitSummaryCard = ({ title, data }: SplitSummaryCardProps) => {
+const SplitSummaryCard = ({ title, data, fullHeight = false }: SplitSummaryCardProps) => {
   return (
-    <Card elevation={2}>
+    <Card
+      elevation={2}
+      sx={{
+        width: fullHeight ? "100%" : "auto",
+        height: fullHeight ? "100%" : "auto",
+        flex: fullHeight ? 1 : undefined,
+        borderRadius: 3,
+      }}
+    >
       <CardContent>
         <Typography variant="subtitle1" fontWeight={700} gutterBottom>
           {title}
