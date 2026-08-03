@@ -24,13 +24,19 @@ const SearchPanel = () => {
         height: "calc(100vh - 360px)",
         display: "flex",
         flexDirection: "column",
+        border: "none",
+        boxShadow: "none",
       }}
     >
       <CardContent
         sx={{
-          display: "flex",
-          flexDirection: "column",
           flex: 1,
+          pt: 0,
+          px: 2,
+          pb: 2,
+          "&:last-child": {
+            pb: 2,
+          },
         }}
       >
         <Box display="flex" alignItems="self-start" gap={2}>
