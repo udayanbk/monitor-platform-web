@@ -6,7 +6,13 @@ const RecentLogsPanel = () => {
   const [tab, setTab] = useState(0);
 
   return (
-    <Card>
+    <Card
+      sx={{
+        minHeight: "calc(100vh - 360px)",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <CardContent>
         <Typography variant="h6" fontWeight={700} gutterBottom>
           Recent Logs
@@ -20,9 +26,9 @@ const RecentLogsPanel = () => {
         <Divider sx={{ mb: 2 }} />
 
         <Box>
-          {tab === 0 && <>Success Table</>}
+          {tab === 0 && <>Success Data</>}
 
-          {tab === 1 && <>Failed Table</>}
+          {tab === 1 && <>Failed Data</>}
         </Box>
       </CardContent>
     </Card>
