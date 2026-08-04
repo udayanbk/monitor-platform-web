@@ -18,11 +18,11 @@ import {
   TableCell,
 } from "@mui/material";
 import { getRenewalFailedLogs, getRenewalSuccessLogs } from "../../../../services/renewalServices";
+import { RecentRenewalLog } from "../../../common/Interfaces";
 
 const RecentLogsPanel = () => {
   const [tab, setTab] = useState(0);
-  const [successLogResp, setSuccessLogResp] = useState<any[]>([]);
-  const [failedLogResp, setFailedLogResp] = useState<any[]>([]);
+  const [logResp, setLogResp] = useState<RecentRenewalLog[]>([]);
 
   useEffect(() => {
     if (tab === 0) {
@@ -36,7 +36,7 @@ const RecentLogsPanel = () => {
     const resp = await getRenewalSuccessLogs();
     console.log("success-log--", resp);
     if (resp?.success) {
-      setSuccessLogResp(resp?.data);
+      setLogResp(resp?.data);
     }
   };
 
@@ -44,7 +44,7 @@ const RecentLogsPanel = () => {
     const resp = await getRenewalFailedLogs();
     console.log("failure-log--", resp);
     if (resp?.success) {
-      setFailedLogResp(resp?.data);
+      setLogResp(resp?.data);
     }
   };
 
@@ -53,6 +53,9 @@ const RecentLogsPanel = () => {
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText,
       fontWeight: 600,
+      position: "sticky",
+      top: 0,
+      zIndex: 2,
     },
     [`&.${tableCellClasses.body}`]: {
       fontSize: 14,
@@ -75,7 +78,7 @@ const RecentLogsPanel = () => {
   return (
     <Card
       sx={{
-        minHeight: "calc(100vh - 360px)",
+        height: "calc(100vh - 480px)",
         display: "flex",
         flexDirection: "column",
         border: "none",
@@ -101,103 +104,54 @@ const RecentLogsPanel = () => {
         <Divider sx={{ mb: 2 }} />
 
         <Box>
-          {tab === 0 && (
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                <TableHead>
+          <TableContainer component={Paper} sx={{ overflow: "auto", maxHeight: 360 }}>
+            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell align="center" width={180}>
+                    Date
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Policy No</StyledTableCell>
+                  <StyledTableCell align="center">Quote No</StyledTableCell>
+                  <StyledTableCell align="center">Name</StyledTableCell>
+                  <StyledTableCell align="center" width={60}>
+                    Core
+                  </StyledTableCell>
+                  <StyledTableCell align="center">Product</StyledTableCell>
+                  <StyledTableCell align="center">Amount</StyledTableCell>
+                  <StyledTableCell align="center" width={80}>
+                    Status
+                  </StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody sx={{}}>
+                {logResp && logResp.length > 0 ? (
+                  logResp.map((row) => (
+                    <StyledTableRow key={row.policy_no as React.Key}>
+                      <StyledTableCell align="center">{row?.updated_at}</StyledTableCell>
+                      <StyledTableCell align="center">{row?.policy_no}</StyledTableCell>
+                      <StyledTableCell align="center">{row.renewal_quote_number}</StyledTableCell>
+                      <StyledTableCell align="center">{row.insured_name}</StyledTableCell>
+                      <StyledTableCell align="center" width={60}>
+                        {row.target_core_system}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">{row.product_code}</StyledTableCell>
+                      <StyledTableCell align="center">{row.amount}</StyledTableCell>
+                      <StyledTableCell align="center" width={80}>
+                        {row.status_message}
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))
+                ) : (
                   <TableRow>
-                    <StyledTableCell align="center">Date</StyledTableCell>
-                    <StyledTableCell align="center">Policy No</StyledTableCell>
-                    <StyledTableCell align="center">Quote No</StyledTableCell>
-                    <StyledTableCell align="center">Name</StyledTableCell>
-                    <StyledTableCell align="center" width={60}>
-                      Core
-                    </StyledTableCell>
-                    <StyledTableCell align="center">Product</StyledTableCell>
-                    <StyledTableCell align="center">Amount</StyledTableCell>
-                    <StyledTableCell align="center" width={80}>
-                      Status
-                    </StyledTableCell>
+                    <TableCell colSpan={8} align="center">
+                      No Records Found
+                    </TableCell>
                   </TableRow>
-                </TableHead>
-                <TableBody>
-                  {successLogResp && successLogResp.length > 0 ? (
-                    successLogResp.map((row) => (
-                      <StyledTableRow key={row.policy_no}>
-                        <StyledTableCell align="center">{row.updated_at}</StyledTableCell>
-                        <StyledTableCell align="center">{row.policy_no}</StyledTableCell>
-                        <StyledTableCell align="center">{row.renewal_quote_number}</StyledTableCell>
-                        <StyledTableCell align="center">{row.insured_name}</StyledTableCell>
-                        <StyledTableCell align="center" width={60}>
-                          {row.target_core_system}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">{row.product_code}</StyledTableCell>
-                        <StyledTableCell align="center">{row.amount}</StyledTableCell>
-                        <StyledTableCell align="center" width={80}>
-                          {row.status_message}
-                        </StyledTableCell>
-                      </StyledTableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={8} align="center">
-                        No Records Found
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
-
-          {tab === 1 && (
-            <TableContainer component={Paper}>
-              <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                <TableHead>
-                  <TableRow>
-                    <StyledTableCell>Date</StyledTableCell>
-                    <StyledTableCell align="center">Policy No</StyledTableCell>
-                    <StyledTableCell align="center">Quote No</StyledTableCell>
-                    <StyledTableCell align="center">Name</StyledTableCell>
-                    <StyledTableCell align="center" width={60}>
-                      Core
-                    </StyledTableCell>
-                    <StyledTableCell align="center">Product</StyledTableCell>
-                    <StyledTableCell align="center">Amount</StyledTableCell>
-                    <StyledTableCell align="center" width={80}>
-                      Status
-                    </StyledTableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {failedLogResp && failedLogResp.length > 0 ? (
-                    failedLogResp.map((row) => (
-                      <StyledTableRow key={row.policy_no}>
-                        <StyledTableCell align="center">{row.updated_at}</StyledTableCell>
-                        <StyledTableCell align="center">{row.policy_no}</StyledTableCell>
-                        <StyledTableCell align="center">{row.renewal_quote_number}</StyledTableCell>
-                        <StyledTableCell align="center">{row.insured_name}</StyledTableCell>
-                        <StyledTableCell align="center" width={60}>
-                          {row.target_core_system}
-                        </StyledTableCell>
-                        <StyledTableCell align="center">{row.product_code}</StyledTableCell>
-                        <StyledTableCell align="center">{row.amount}</StyledTableCell>
-                        <StyledTableCell align="center" width={80}>
-                          {row.status_message}
-                        </StyledTableCell>
-                      </StyledTableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={8} align="center">
-                        No Records Found
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          )}
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
       </CardContent>
     </Card>

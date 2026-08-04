@@ -21,11 +21,13 @@ const SummaryCard = ({
 }: SummaryCardProps) => {
   return (
     <Card
-      elevation={2}
+      elevation={3}
       sx={{
         height: fullHeight ? "100%" : height ? `${height}%` : "100%",
         flex: fullHeight ? 1 : undefined,
         borderRadius: 3,
+        border: 2,
+        borderColor: "primary.main",
       }}
     >
       <CardContent>

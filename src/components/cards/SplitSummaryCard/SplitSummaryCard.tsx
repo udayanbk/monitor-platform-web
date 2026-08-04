@@ -9,12 +9,14 @@ interface SplitSummaryCardProps {
 const SplitSummaryCard = ({ title, data, fullHeight = false }: SplitSummaryCardProps) => {
   return (
     <Card
-      elevation={2}
+      elevation={3}
       sx={{
         width: fullHeight ? "100%" : "auto",
         height: fullHeight ? "100%" : "auto",
         flex: fullHeight ? 1 : undefined,
         borderRadius: 3,
+        border: 2,
+        borderColor: "primary.main",
       }}
     >
       <CardContent>
@@ -22,7 +24,7 @@ const SplitSummaryCard = ({ title, data, fullHeight = false }: SplitSummaryCardP
           {title}
         </Typography>
 
-        <Divider sx={{ mb: 2 }} />
+        <Divider sx={{ mb: 2, borderColor: "primary.main" }} />
 
         <Stack spacing={1}>
           {Object.entries(data ?? {}).map(([key, value]) => (

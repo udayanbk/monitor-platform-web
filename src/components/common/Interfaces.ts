@@ -32,3 +32,31 @@ export interface PolicySummary {
   successPolicy: Record<string, number>;
   failPolicy: Record<string, number>;
 }
+
+export interface RecentRenewalLog {
+  updated_at: string;
+  policy_no: string;
+  renewal_quote_number: string;
+  insured_name: string;
+  target_core_system: string;
+  product_code: string;
+  amount: number;
+  status_message: string;
+}
+
+export interface SearchRenewalLog {
+  updated_at: string;
+  policy_no: string;
+  renewal_quote_number: string;
+  insured_name: string;
+  target_core_system: string;
+  product_code: string;
+  amount: number;
+  status_message: string;
+  renewals_id: string;
+  policy_type: string;
+  payment_flag: number;
+  con: string;
+  billdesk_recon_msg: string;
+  renewal_notice_status: string;
+}

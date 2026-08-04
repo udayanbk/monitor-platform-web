@@ -43,13 +43,13 @@ const ActivityCard = ({ title, sections, variant = "stacked" }: ActivityCardProp
   };
 
   return (
-    <Card elevation={2}>
+    <Card elevation={3} sx={{ border: 2, borderColor: "warning.main" }}>
       <CardContent>
         <Typography variant="subtitle1" fontWeight={700}>
           {title}
         </Typography>
 
-        <Divider sx={{ my: 1 }} />
+        <Divider sx={{ my: 1, borderColor: "warning.main" }} />
 
         {variant === "stacked" ? (
           <Stack divider={<Divider />} spacing={2}>
@@ -67,7 +67,7 @@ const ActivityCard = ({ title, sections, variant = "stacked" }: ActivityCardProp
                   px: 1.5,
                   ...(index < sections.length - 1 && {
                     borderRight: 1,
-                    borderColor: "divider",
+                    borderColor: "warning.main",
                   }),
                 }}
               >

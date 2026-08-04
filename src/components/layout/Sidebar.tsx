@@ -55,6 +55,14 @@ export default function Sidebar() {
                     sx={{
                       mx: 1,
                       borderRadius: 2,
+                      "&.active": {
+                        bgcolor: "primary.main",
+                        color: "#fff",
+                      },
+
+                      "&.active .MuiListItemIcon-root": {
+                        color: "#fff",
+                      },
                     }}
                   >
                     <ListItemIcon>
@@ -74,7 +82,8 @@ export default function Sidebar() {
                           component={NavLink}
                           to={child.path}
                           sx={{
-                            pl: 11,
+                            mx: 3,
+                            borderRadius: 2,
                             "&.active": {
                               bgcolor: "primary.main",
                               color: "#fff",
