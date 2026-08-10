@@ -29,8 +29,10 @@ export interface TicketActivity {
 export interface PolicySummary {
   totalSearched: number;
   totalDownloads: number;
-  successPolicy: Record<string, number>;
-  failPolicy: Record<string, number>;
+  paSuccessPolicy: Record<string, number>;
+  paFailPolicy: Record<string, number>;
+  retailSuccessPolicy: Record<string, number>;
+  retailFailPolicy: Record<string, number>;
 }
 
 export interface RecentRenewalLog {

@@ -29,7 +29,7 @@ const PolicyDashboard = () => {
         <Stack spacing={3}>
           <SummarySection
             equalHeight={true}
-            columns={4}
+            columns={6}
             summaryCards={[
               {
                 title: "Total Searched",
@@ -42,12 +42,20 @@ const PolicyDashboard = () => {
             ]}
             splitCards={[
               {
-                title: "Success Data",
-                data: summary?.successPolicy,
+                title: "PA Success Data",
+                data: summary?.paSuccessPolicy,
               },
               {
-                title: "Failure Data",
-                data: summary?.failPolicy,
+                title: "PA Failure Data",
+                data: summary?.paFailPolicy,
+              },
+              {
+                title: "Retail Success Data",
+                data: summary?.retailSuccessPolicy,
+              },
+              {
+                title: "Retail Failure Data",
+                data: summary?.retailFailPolicy,
               },
             ]}
           />

@@ -50,6 +50,9 @@ const SearchPanel = () => {
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.primary.contrastText,
       fontWeight: 600,
+      height: 40,
+      paddingTop: 6,
+      paddingBottom: 6,
     },
     [`&.${tableCellClasses.body}`]: {
       fontSize: 14,
@@ -57,6 +60,9 @@ const SearchPanel = () => {
       whiteSpace: "nowrap",
       overflow: "hidden",
       textOverflow: "ellipsis",
+      height: 40,
+      paddingTop: 6,
+      paddingBottom: 6,
     },
   }));
 
@@ -129,7 +135,7 @@ const SearchPanel = () => {
               <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 700 }} aria-label="customized table">
                   <TableHead>
-                    <TableRow>
+                    <TableRow sx={{ maxHeight: 20 }}>
                       <StyledTableCell align="center" width={180}>
                         Date
                       </StyledTableCell>
