@@ -1,21 +1,18 @@
 import api from "../api/axios";
+import { apiRequest } from "./api-request";
 
-export const getPaymentStatus = async () => {
-  const response = await api.get("/projects/renewal/payments");
-  return response.data;
-};
+export const getPaymentStatus = async () => apiRequest(api.get("/projects/renewal/payments"));
 
-export const getRenewalSuccessLogs = async () => {
-  const response = await api.get("/projects/renewal/logs/success");
-  return response.data;
-};
+export const getYesterdayPaymentStatus = async () =>
+  apiRequest(api.get("/projects/renewal/yesterday"));
 
-export const getRenewalFailedLogs = async () => {
-  const response = await api.get("/projects/renewal/logs/fail");
-  return response.data;
-};
+export const getRenewalSuccessLogs = async () =>
+  apiRequest(api.get("/projects/renewal/logs/success"));
 
-export const searchRenewalLogs = async (payload: Record<string, string>) => {
-  const response = await api.post("/projects/renewal/logs/search", payload);
-  return response.data;
-};
+export const getRenewalFailedLogs = async () => apiRequest(api.get("/projects/renewal/logs/fail"));
+
+export const searchRenewalLogs = async (payload: Record<string, string>) =>
+  apiRequest(api.post("/projects/renewal/logs/search", payload));
+
+export const repushRenewalFailedPayments = async () =>
+  apiRequest(api.post("/projects/renewal/failed/repush", {}, { timeout: 12000 }));

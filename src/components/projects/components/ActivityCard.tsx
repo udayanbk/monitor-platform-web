@@ -1,4 +1,5 @@
-import { Card, CardContent, Divider, Grid, Stack, Typography } from "@mui/material";
+import { Button, Card, CardContent, Divider, Grid, Stack, Typography } from "@mui/material";
+import BButton from "../../common/BButton";
 
 type ActivitySection = {
   title: string;
@@ -9,9 +10,19 @@ interface ActivityCardProps {
   title: string;
   sections: ActivitySection[];
   variant?: "stacked" | "split";
+  button?: boolean;
+  buttonName?: string;
+  functionCall?: () => void;
 }
 
-const ActivityCard = ({ title, sections, variant = "stacked" }: ActivityCardProps) => {
+const ActivityCard = ({
+  title,
+  sections,
+  variant = "stacked",
+  button,
+  buttonName = "default",
+  functionCall,
+}: ActivityCardProps) => {
   const renderSection = (section: ActivitySection) => {
     const entries = Object.entries(section.values ?? {});
 
@@ -48,6 +59,7 @@ const ActivityCard = ({ title, sections, variant = "stacked" }: ActivityCardProp
         <Typography variant="subtitle1" fontWeight={700}>
           {title}
         </Typography>
+        {button && <BButton buttonName={buttonName} functionCall={functionCall} />}
 
         <Divider sx={{ my: 1, borderColor: "warning.main" }} />
 

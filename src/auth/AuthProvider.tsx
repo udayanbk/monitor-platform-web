@@ -25,7 +25,6 @@ const AuthProvider = ({ children }: Props) => {
   const logout = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
-
     setToken(null);
     setUser(null);
   };

@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
 import theme from "./theme/theme";
 import AuthProvider from "./auth/AuthProvider";
+import { SnackbarProvider } from "./context/SnackbarContext";
 
 const queryClient = new QueryClient();
 
@@ -18,7 +19,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <CssBaseline />
         <BrowserRouter>
           <AuthProvider>
-            <App />
+            <SnackbarProvider>
+              <App />
+            </SnackbarProvider>
           </AuthProvider>
         </BrowserRouter>
       </ThemeProvider>
