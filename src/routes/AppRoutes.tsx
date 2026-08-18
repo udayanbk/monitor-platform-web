@@ -31,7 +31,7 @@ const AppRoutes = () => {
       </Route>
 
       <Route element={<ProtectedRoute />}>
-        <Route path="/reports" element={<ReportsPage />} />
+        <Route path="/daily-reports" element={<ReportsPage />} />
       </Route>
 
       <Route element={<ProtectedRoute />}>

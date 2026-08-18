@@ -1,11 +1,11 @@
 import PageTitle from "../../components/common/PageTitle";
 import AppLayout from "../../components/layout/AppLayout";
+import DailyReports from "../../components/projects/DailyReports";
 
 const ReportsPage = () => {
   return (
     <AppLayout>
-      <PageTitle title="Reports" subtitle="Real-time monitoring of all applications" />
-      <div style={{ padding: "20px" }}></div>
+      <DailyReports />;
     </AppLayout>
   );
 };

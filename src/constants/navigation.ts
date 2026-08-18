@@ -65,8 +65,8 @@ export const navigation: NavigationItem[] = [
     icon: NotificationsIcon,
   },
   {
-    title: "Reports",
-    path: "/reports",
+    title: "Daily Reports",
+    path: "/daily-reports",
     icon: AssessmentIcon,
   },
   {

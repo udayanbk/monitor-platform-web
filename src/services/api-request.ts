@@ -6,7 +6,6 @@ export const apiRequest = async <T>(request: Promise<AxiosResponse<T>>): Promise
     return response.data;
   } catch (error: any) {
     console.error("API Error:", error);
-
     throw error;
   }
 };
