@@ -10,7 +10,7 @@ const BButton = ({ buttonName, functionCall }: ButtonInterface) => {
     <Button
       fullWidth
       variant="outlined"
-      sx={{ fontWeight: "bold", border: "3px solid", padding: 0 }}
+      sx={{ fontWeight: "bold", border: "2px solid", padding: 0 }}
       onClick={functionCall}
     >
       {buttonName}

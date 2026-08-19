@@ -46,7 +46,7 @@ export interface RecentRenewalLog {
   status_message: string;
 }
 
-export interface SearchRenewalLog {
+export interface SearchLog {
   updated_at: string;
   policy_no: string;
   renewal_quote_number: string;
@@ -61,4 +61,16 @@ export interface SearchRenewalLog {
   con: string;
   billdesk_recon_msg: string;
   renewal_notice_status: string;
+}
+
+export interface ServiceLog {
+  counter: number;
+  response_timestamp: string;
+  request_json: Record<string, any>;
+  response_json: Record<string, any>;
+}
+
+export interface SearchRenewalLog {
+  logs: SearchLog;
+  serviceLog: ServiceLog[];
 }
