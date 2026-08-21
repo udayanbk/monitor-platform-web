@@ -1,7 +1,6 @@
-import React, { ReactElement, ReactHTMLElement, useEffect, useState } from "react";
-import { Box, Grid, Pagination, TextField, Typography } from "@mui/material";
-// import ReportCard from "./ReportCard";
-import { getAllReports } from "../../../services/general.service";
+import React, { useEffect, useState } from "react";
+import { Box, Pagination, TextField, Typography } from "@mui/material";
+import { getAllReports, updateReportMode } from "../../../services/general.service";
 import ReportsTable from "./ReportsTable";
 
 interface ReportChannel {
@@ -32,11 +31,11 @@ interface Report {
 }
 
 const DailyReports = () => {
+  const limit = 7;
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(7);
   const [totalPages, setTotalPages] = useState(0);
   const [reports, setReports] = useState<Report[] | null>(null);
-  const [sendingReportId, setSendingReportId] = useState<number | null>(null);
+  const [apiCallReportId, setApiCallReportId] = useState<number | null>(null);
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
@@ -61,10 +60,10 @@ const DailyReports = () => {
   };
 
   const handleSendReport = async (reportId: number) => {
-    setSendingReportId(reportId);
+    setApiCallReportId(reportId);
     console.log("Sending report:", reportId);
     await new Promise((resolve) => setTimeout(resolve, 1500));
-    setSendingReportId(null);
+    setApiCallReportId(null);
     console.log("Report sent:", reportId);
   };
 
@@ -77,6 +76,22 @@ const DailyReports = () => {
     } else {
       setSearchText("");
       setPage(1);
+    }
+  };
+
+  const handleModeChange = async (mode: string) => {
+    try {
+      console.log("sending report id", apiCallReportId);
+      const respCall = await updateReportMode({
+        reportId: apiCallReportId ?? "",
+        mode,
+      });
+      console.log("respCall", respCall);
+      await getReportsData();
+    } catch (error) {
+      console.error("Failed to update report mode:", error);
+    } finally {
+      setApiCallReportId(null);
     }
   };
 
@@ -103,11 +118,12 @@ const DailyReports = () => {
       {reports && (
         <ReportsTable
           reports={reports}
-          sendingReportId={sendingReportId}
+          setApiCallReportId={setApiCallReportId}
           onSend={handleSendReport}
           onHistory={(report) => {
             console.log("History:", report);
           }}
+          handleModeChange={handleModeChange}
         />
       )}
       <Pagination

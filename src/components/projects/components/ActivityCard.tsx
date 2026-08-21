@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, Divider, Grid, Stack, Typography } from "@mui/material";
+import { Card, CardContent, Divider, Grid, Stack, Typography } from "@mui/material";
 import BButton from "../../common/BButton";
 
 type ActivitySection = {

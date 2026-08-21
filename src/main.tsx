@@ -10,6 +10,8 @@ import theme from "./theme/theme";
 import AuthProvider from "./auth/AuthProvider";
 import { SnackbarProvider } from "./context/SnackbarContext";
 
+const basePath = import.meta.env.VITE_BASE_PATH || "/";
+
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -17,7 +19,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <BrowserRouter>
+        <BrowserRouter basename={basePath}>
           <AuthProvider>
             <SnackbarProvider>
               <App />

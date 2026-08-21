@@ -13,7 +13,12 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { Menu, MenuItem } from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import CheckIcon from "@mui/icons-material/Check";
 import { getChannelStyles, getModeStyles, getProjectStyles } from "./styles";
+import { useState } from "react";
+import SlideDialog from "../../common/SlideDialog";
 
 interface ReportChannel {
   enabled: boolean;
@@ -32,7 +37,7 @@ export interface Report {
   report_name: string;
   project: string;
   description?: string;
-  mode: "SCHEDULED" | "MANUAL";
+  mode: "SCHEDULED" | "MANUAL" | "PENDING";
   schedule?: string | null;
   channels: ReportChannels;
   enabled: number;
@@ -44,12 +49,25 @@ export interface Report {
 
 interface ReportsTableProps {
   reports: Report[];
-  sendingReportId: number | null;
+  setApiCallReportId: (id: number | null) => void;
   onSend: (reportId: number) => void;
   onHistory?: (report: Report) => void;
+  handleModeChange: (mode: string) => void;
 }
 
-const ReportsTable = ({ reports, sendingReportId, onSend, onHistory }: ReportsTableProps) => {
+const ReportsTable = ({
+  reports,
+  setApiCallReportId,
+  onSend,
+  onHistory,
+  handleModeChange,
+}: ReportsTableProps) => {
+  const [modeAnchorEl, setModeAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [updateMode, setUpdateMode] = useState<string>("");
+  const [modeMenuOpen, setmodeMenuOpen] = useState<boolean>(false);
+
   const getEnabledChannels = (channels: ReportChannels) => {
     return Object.entries(channels ?? {})
       .filter(([, config]) => {
@@ -150,206 +168,271 @@ const ReportsTable = ({ reports, sendingReportId, onSend, onHistory }: ReportsTa
     });
   };
 
+  const handleModeClick = (event: React.MouseEvent<HTMLElement>, report: Report) => {
+    console.log("repot", report);
+    setApiCallReportId(report?.id);
+    setModeAnchorEl(event.currentTarget);
+    setmodeMenuOpen(true);
+    setSelectedReport(report);
+  };
+
   return (
-    <TableContainer
-      component={Paper}
-      elevation={2}
-      sx={{
-        border: 1,
-        borderColor: "divider",
-        borderRadius: 2,
-        overflow: "auto",
-      }}
-    >
-      <Table sx={{ minWidth: 1250 }}>
-        <TableHead>
-          <TableRow
-            sx={{
-              backgroundColor: "action.hover",
-            }}
-          >
-            <TableCell sx={{ fontWeight: 700 }}>Report</TableCell>
-
-            <TableCell sx={{ fontWeight: 700 }}>Project</TableCell>
-
-            <TableCell sx={{ fontWeight: 700 }}>Mode</TableCell>
-
-            <TableCell sx={{ fontWeight: 700 }}>Schedule</TableCell>
-
-            <TableCell sx={{ fontWeight: 700 }}>Channels</TableCell>
-
-            <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
-
-            <TableCell sx={{ fontWeight: 700 }}>Last Sent</TableCell>
-
-            <TableCell sx={{ fontWeight: 700 }}>Triggered By</TableCell>
-
-            <TableCell
-              align="center"
+    <>
+      <TableContainer
+        component={Paper}
+        elevation={2}
+        sx={{
+          border: 1,
+          borderColor: "divider",
+          borderRadius: 2,
+          overflow: "auto",
+        }}
+      >
+        <Table sx={{ minWidth: 1250 }}>
+          <TableHead>
+            <TableRow
               sx={{
-                fontWeight: 700,
-                minWidth: 190,
+                backgroundColor: "action.hover",
               }}
             >
-              Actions
-            </TableCell>
-          </TableRow>
-        </TableHead>
+              <TableCell sx={{ fontWeight: 700 }}>Report</TableCell>
 
-        <TableBody>
-          {reports.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={9} align="center">
-                <Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>
-                  No reports found.
-                </Typography>
+              <TableCell sx={{ fontWeight: 700 }}>Project</TableCell>
+
+              <TableCell sx={{ fontWeight: 700 }}>Mode</TableCell>
+
+              <TableCell sx={{ fontWeight: 700 }}>Schedule</TableCell>
+
+              <TableCell sx={{ fontWeight: 700 }}>Channels</TableCell>
+
+              <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+
+              <TableCell sx={{ fontWeight: 700 }}>Last Sent</TableCell>
+
+              <TableCell sx={{ fontWeight: 700 }}>Triggered By</TableCell>
+
+              <TableCell
+                align="center"
+                sx={{
+                  fontWeight: 700,
+                  minWidth: 190,
+                }}
+              >
+                Actions
               </TableCell>
             </TableRow>
-          ) : (
-            reports.map((report) => {
-              const channels = getEnabledChannels(report.channels);
+          </TableHead>
 
-              const loading = sendingReportId === report.id;
+          <TableBody>
+            {reports.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={9} align="center">
+                  <Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>
+                    No reports found.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            ) : (
+              reports.map((report) => {
+                const channels = getEnabledChannels(report.channels);
 
-              return (
-                <TableRow
-                  key={report.report_code}
-                  hover
-                  sx={{
-                    "&:last-child td": {
-                      borderBottom: 0,
-                    },
-                  }}
-                >
-                  <TableCell sx={{ minWidth: 240 }}>
-                    <Tooltip title={report.description ?? ""} placement="top-start">
-                      <Box>
-                        <Typography variant="body2" fontWeight={700}>
-                          {report.report_name}
-                        </Typography>
+                // const loading = sendingReportId === report.id;
 
-                        <Typography variant="caption" color="text.secondary">
-                          {report.report_code}
-                        </Typography>
-                      </Box>
-                    </Tooltip>
-                  </TableCell>
+                return (
+                  <TableRow
+                    key={report.report_code}
+                    hover
+                    sx={{
+                      "&:last-child td": {
+                        borderBottom: 0,
+                      },
+                    }}
+                  >
+                    <TableCell sx={{ minWidth: 240 }}>
+                      <Tooltip title={report.description ?? ""} placement="top-start">
+                        <Box>
+                          <Typography variant="body2" fontWeight={700}>
+                            {report.report_name}
+                          </Typography>
 
-                  <TableCell>
-                    <Chip
-                      label={report.project}
-                      size="small"
-                      variant="outlined"
-                      sx={{
-                        ...getProjectStyles(report.project),
-                        fontWeight: 600,
-                      }}
-                    />
-                  </TableCell>
+                          <Typography variant="caption" color="text.secondary">
+                            {report.report_code}
+                          </Typography>
+                        </Box>
+                      </Tooltip>
+                    </TableCell>
 
-                  <TableCell>
-                    <Chip
-                      label={report.mode === "SCHEDULED" ? "Scheduled" : "Manual"}
-                      size="small"
-                      variant="outlined"
-                      sx={{
-                        ...getModeStyles(report.mode),
-                        fontWeight: 600,
-                      }}
-                    />
-                  </TableCell>
-
-                  <TableCell>
-                    <Typography variant="body2" fontWeight={500}>
-                      {formatSchedule(report.schedule)}
-                    </Typography>
-                  </TableCell>
-
-                  <TableCell sx={{ minWidth: 160 }}>
-                    <Stack
-                      direction="column"
-                      spacing={0.5}
-                      useFlexGap
-                      flexWrap="wrap"
-                      alignItems="flex-start"
-                    >
-                      {channels.length > 0 ? (
-                        channels.map((channel) => (
-                          <Chip
-                            key={channel}
-                            label={channel}
-                            size="small"
-                            variant="outlined"
-                            sx={{
-                              ...getChannelStyles(channel),
-                              fontWeight: 600,
-                            }}
-                          />
-                        ))
-                      ) : (
-                        <Typography variant="body2" color="text.secondary">
-                          —
-                        </Typography>
-                      )}
-                    </Stack>
-                  </TableCell>
-
-                  <TableCell>
-                    <Chip
-                      label={getStatusLabel(report.last_status)}
-                      color={getStatusColor(report.last_status)}
-                      size="small"
-                    />
-                  </TableCell>
-
-                  <TableCell sx={{ minWidth: 165 }}>
-                    <Typography variant="body2">{formatDateTime(report.last_sent_at)}</Typography>
-                  </TableCell>
-
-                  <TableCell>
-                    <Typography variant="body2">
-                      {report.last_triggered_by
-                        ? report.last_triggered_by === "SCHEDULED"
-                          ? "Scheduled"
-                          : "Manual"
-                        : "—"}
-                    </Typography>
-                  </TableCell>
-
-                  <TableCell align="center">
-                    <Stack direction="row" spacing={1} justifyContent="center">
-                      <Button
+                    <TableCell>
+                      <Chip
+                        label={report.project}
+                        size="small"
                         variant="outlined"
-                        size="small"
-                        disabled={loading || report.enabled !== 1}
-                        onClick={() => onSend(report.id)}
                         sx={{
-                          fontWeight: 700,
-                          whiteSpace: "nowrap",
+                          ...getProjectStyles(report.project),
+                          fontWeight: 600,
                         }}
-                      >
-                        {loading ? "Sending..." : "Send"}
-                      </Button>
+                      />
+                    </TableCell>
 
-                      <Button
-                        variant="text"
+                    <TableCell>
+                      <Chip
+                        label={
+                          report.mode === "SCHEDULED"
+                            ? "Scheduled"
+                            : report.mode === "MANUAL"
+                              ? "Manual"
+                              : "Pending"
+                        }
                         size="small"
-                        onClick={() => onHistory?.(report)}
+                        variant="outlined"
+                        deleteIcon={<KeyboardArrowDownIcon />}
+                        onClick={(event) => handleModeClick(event, report)}
+                        onDelete={() => {}}
                         sx={{
-                          fontWeight: 700,
+                          ...getModeStyles(report.mode),
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          "& .MuiChip-deleteIcon": {
+                            color: "inherit",
+                            marginLeft: "2px",
+                          },
                         }}
+                      />
+                    </TableCell>
+
+                    <TableCell>
+                      <Typography variant="body2" fontWeight={500}>
+                        {formatSchedule(report.schedule)}
+                      </Typography>
+                    </TableCell>
+
+                    <TableCell sx={{ minWidth: 160 }}>
+                      <Stack
+                        direction="column"
+                        spacing={0.5}
+                        useFlexGap
+                        flexWrap="wrap"
+                        alignItems="flex-start"
                       >
-                        History
-                      </Button>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              );
-            })
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                        {channels.length > 0 ? (
+                          channels.map((channel) => (
+                            <Chip
+                              key={channel}
+                              label={channel}
+                              size="small"
+                              variant="outlined"
+                              sx={{
+                                ...getChannelStyles(channel),
+                                fontWeight: 600,
+                              }}
+                            />
+                          ))
+                        ) : (
+                          <Typography variant="body2" color="text.secondary">
+                            —
+                          </Typography>
+                        )}
+                      </Stack>
+                    </TableCell>
+
+                    <TableCell>
+                      <Chip
+                        label={getStatusLabel(report.last_status)}
+                        color={getStatusColor(report.last_status)}
+                        size="small"
+                      />
+                    </TableCell>
+
+                    <TableCell sx={{ minWidth: 165 }}>
+                      <Typography variant="body2">{formatDateTime(report.last_sent_at)}</Typography>
+                    </TableCell>
+
+                    <TableCell>
+                      <Typography variant="body2">
+                        {report.last_triggered_by
+                          ? report.last_triggered_by === "SCHEDULED"
+                            ? "Scheduled"
+                            : "Manual"
+                          : "—"}
+                      </Typography>
+                    </TableCell>
+
+                    <TableCell align="center">
+                      <Stack direction="row" spacing={1} justifyContent="center">
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          // disabled={loading || report.enabled !== 1}
+                          onClick={() => onSend(report.id)}
+                          sx={{
+                            fontWeight: 700,
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          {/* {loading ? "Sending..." : "Send"} */}
+                          {"Send"}
+                        </Button>
+
+                        <Button
+                          variant="text"
+                          size="small"
+                          onClick={() => onHistory?.(report)}
+                          sx={{
+                            fontWeight: 700,
+                          }}
+                        >
+                          History
+                        </Button>
+                      </Stack>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Menu
+        anchorEl={modeAnchorEl}
+        open={modeMenuOpen}
+        onClose={() => {
+          setmodeMenuOpen(false);
+          setModeAnchorEl(null);
+          setSelectedReport(null);
+        }}
+      >
+        {["SCHEDULED", "MANUAL", "PENDING"].map((mode) => (
+          <MenuItem
+            key={mode}
+            selected={selectedReport?.mode === mode}
+            onClick={() => {
+              console.log("mode", mode);
+              setUpdateMode(mode);
+              setmodeMenuOpen(false);
+              setOpenModal(true);
+            }}
+          >
+            <Box
+              sx={{
+                width: 24,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              {selectedReport?.mode === mode && <CheckIcon fontSize="small" />}
+            </Box>
+            {mode === "SCHEDULED" ? "Scheduled" : mode === "MANUAL" ? "Manual" : "Pending"}
+          </MenuItem>
+        ))}
+      </Menu>
+      <SlideDialog
+        openModal={openModal}
+        handleOKButton={() => handleModeChange(updateMode)}
+        setOpenModal={setOpenModal}
+        headerText={`Report - ${selectedReport?.report_name} - Mode Change`}
+        descriptionText={`Are you sure to change report sending mode to '${updateMode}'`}
+      />
+    </>
   );
 };
 
