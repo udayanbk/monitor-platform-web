@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Box, Pagination, TextField, Typography } from "@mui/material";
-import { getAllReports, updateReportMode } from "../../../services/general.service";
+import { getAllReports, sendReportNow, updateReportMode } from "../../../services/general.service";
 import ReportsTable from "./ReportsTable";
+import { useSnackbar } from "../../../context/SnackbarContext";
 
 interface ReportChannel {
   enabled: boolean;
 }
+
+type OkFunction = "UpdateMode" | "SendReport" | "GetLog";
+type UpdatingMode = "MANUAL" | "SCHEDULED" | "PENDING";
 
 interface ReportChannels {
   EMAIL?: ReportChannel;
@@ -31,12 +35,16 @@ interface Report {
 }
 
 const DailyReports = () => {
+  const { showSnackbar } = useSnackbar();
   const limit = 7;
+  const [openModal, setOpenModal] = useState<boolean>(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [reports, setReports] = useState<Report[] | null>(null);
   const [apiCallReportId, setApiCallReportId] = useState<number | null>(null);
   const [searchText, setSearchText] = useState("");
+  const [updatingMode, setUpdatingMode] = useState<UpdatingMode>("PENDING");
+  const [handleOKFunction, setHandleOKFunction] = useState<OkFunction>("GetLog");
 
   useEffect(() => {
     getReportsData();
@@ -59,14 +67,6 @@ const DailyReports = () => {
     }
   };
 
-  const handleSendReport = async (reportId: number) => {
-    setApiCallReportId(reportId);
-    console.log("Sending report:", reportId);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setApiCallReportId(null);
-    console.log("Report sent:", reportId);
-  };
-
   const onSearchTextChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     const v = e?.target?.value;
@@ -79,21 +79,77 @@ const DailyReports = () => {
     }
   };
 
-  const handleModeChange = async (mode: string) => {
-    try {
-      console.log("sending report id", apiCallReportId);
-      const respCall = await updateReportMode({
-        reportId: apiCallReportId ?? "",
-        mode,
-      });
-      console.log("respCall", respCall);
-      await getReportsData();
-    } catch (error) {
-      console.error("Failed to update report mode:", error);
-    } finally {
-      setApiCallReportId(null);
+  const handleActionFunction = async () => {
+    if (apiCallReportId) {
+      try {
+        let responseCall;
+        if (handleOKFunction === "UpdateMode") {
+          console.log("calling - UpdateMode");
+          responseCall = await updateReportMode({
+            reportId: apiCallReportId ?? "",
+            mode: updatingMode,
+          });
+          if (responseCall?.success) {
+            showSnackbar("success", responseCall?.message ?? "Success");
+            await getReportsData();
+          } else {
+            showSnackbar("error", responseCall?.message ?? "Failure");
+          }
+        } else if (handleOKFunction === "SendReport") {
+          console.log("calling - SendReport");
+          responseCall = await sendReportNow({ reportId: apiCallReportId });
+        }
+        console.log("responseCall", responseCall);
+      } catch (error) {
+        console.error("Failed to update report mode:", error);
+      } finally {
+        setOpenModal(false);
+        setApiCallReportId(null);
+      }
     }
   };
+
+  // const handleModeChange = async (mode: string) => {
+  //   try {
+  //     console.log("sending report id", apiCallReportId);
+  //     if (handleOKFunction === "UpdateMode") {
+  //       const respCall = await updateReportMode({
+  //         reportId: apiCallReportId ?? "",
+  //         mode,
+  //       });
+  //       console.log("respCall", respCall);
+  //       if (respCall?.success) {
+  //         showSnackbar("success", respCall?.message ?? "Success");
+  //         await getReportsData();
+  //       } else {
+  //         showSnackbar("error", respCall?.message ?? "Failure");
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to update report mode:", error);
+  //   } finally {
+  //     setOpenModal(false);
+  //     setApiCallReportId(null);
+  //   }
+  // };
+
+  // const handleSendReport = async () => {
+  //   try {
+  //     console.log("apiCallReportId", apiCallReportId);
+  //     if (apiCallReportId && handleOKFunction === "SendReport") {
+  //       const sendReportCall = await sendReportNow({ reportId: apiCallReportId });
+  //       console.log("sendReportCall", sendReportCall);
+  //       if (sendReportCall.success) {
+  //         showSnackbar("success", sendReportCall?.message ?? "Success");
+  //       } else {
+  //         showSnackbar("error", sendReportCall?.message ?? "Failure");
+  //       }
+  //     }
+  //   } catch (error) {
+  //   } finally {
+  //     setOpenModal(false);
+  //   }
+  // };
 
   return (
     <Box>
@@ -119,11 +175,17 @@ const DailyReports = () => {
         <ReportsTable
           reports={reports}
           setApiCallReportId={setApiCallReportId}
-          onSend={handleSendReport}
           onHistory={(report) => {
             console.log("History:", report);
           }}
-          handleModeChange={handleModeChange}
+          updatingMode={updatingMode}
+          setUpdatingMode={setUpdatingMode}
+          // handleModeChange={handleModeChange}
+          // handleSendReport={handleSendReport}
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+          setHandleOKFunction={setHandleOKFunction}
+          handleActionFunction={handleActionFunction}
         />
       )}
       <Pagination

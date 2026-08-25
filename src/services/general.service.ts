@@ -8,3 +8,6 @@ export const getAllReports = async (payload: Record<string, string | number>) =>
 
 export const updateReportMode = async (payload: Record<string, string | number>) =>
   apiRequest(api.post("/projects/reports/update-mode", payload));
+
+export const sendReportNow = async (payload: Record<string, number>) =>
+  apiRequest(api.post("/projects/reports/sendReportNow", payload));

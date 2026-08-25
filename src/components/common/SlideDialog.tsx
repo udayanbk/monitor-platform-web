@@ -32,10 +32,6 @@ export default function SlideDialog({
   headerText,
   descriptionText,
 }: DialogSlideInterface) {
-  const handleClickOpen = () => {
-    setOpenModal(true);
-  };
-
   const handleClose = () => {
     setOpenModal(false);
   };

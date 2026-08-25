@@ -24,6 +24,9 @@ interface ReportChannel {
   enabled: boolean;
 }
 
+type OkFunction = "UpdateMode" | "SendReport" | "GetLog";
+type UpdatingMode = "MANUAL" | "SCHEDULED" | "PENDING";
+
 interface ReportChannels {
   EMAIL?: ReportChannel | boolean;
   WHATSAPP?: ReportChannel | boolean;
@@ -50,23 +53,34 @@ export interface Report {
 interface ReportsTableProps {
   reports: Report[];
   setApiCallReportId: (id: number | null) => void;
-  onSend: (reportId: number) => void;
   onHistory?: (report: Report) => void;
-  handleModeChange: (mode: string) => void;
+  // handleModeChange: (mode: string) => void;
+  openModal: boolean;
+  setOpenModal: (x: boolean) => void;
+  setHandleOKFunction: (x: OkFunction) => void;
+  updatingMode: string;
+  setUpdatingMode: (x: UpdatingMode) => void;
+  handleActionFunction: () => void;
 }
 
 const ReportsTable = ({
   reports,
   setApiCallReportId,
-  onSend,
   onHistory,
-  handleModeChange,
+  // handleModeChange,
+  openModal,
+  setOpenModal,
+  setHandleOKFunction,
+  updatingMode,
+  setUpdatingMode,
+  handleActionFunction,
 }: ReportsTableProps) => {
   const [modeAnchorEl, setModeAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
-  const [openModal, setOpenModal] = useState<boolean>(false);
-  const [updateMode, setUpdateMode] = useState<string>("");
+  // const [updateMode, setUpdateMode] = useState<string>("");
   const [modeMenuOpen, setmodeMenuOpen] = useState<boolean>(false);
+  const [headerText, setHeaderText] = useState<string>("");
+  const [descriptionText, setDescriptionText] = useState<string>("");
 
   const getEnabledChannels = (channels: ReportChannels) => {
     return Object.entries(channels ?? {})
@@ -172,8 +186,18 @@ const ReportsTable = ({
     console.log("repot", report);
     setApiCallReportId(report?.id);
     setModeAnchorEl(event.currentTarget);
-    setmodeMenuOpen(true);
     setSelectedReport(report);
+    setmodeMenuOpen(true);
+  };
+
+  const handleSendReportClick = (report: Report) => {
+    setSelectedReport(report);
+    console.log("reportId", report.id);
+    setApiCallReportId(report?.id);
+    setHeaderText(`Send Report Now - ${report?.report_name}`);
+    setDescriptionText(`Are you sure to send report now ?`);
+    setHandleOKFunction("SendReport");
+    setOpenModal(true);
   };
 
   return (
@@ -363,7 +387,9 @@ const ReportsTable = ({
                           variant="outlined"
                           size="small"
                           // disabled={loading || report.enabled !== 1}
-                          onClick={() => onSend(report.id)}
+                          onClick={() => {
+                            handleSendReportClick(report);
+                          }}
                           sx={{
                             fontWeight: 700,
                             whiteSpace: "nowrap",
@@ -407,8 +433,11 @@ const ReportsTable = ({
             selected={selectedReport?.mode === mode}
             onClick={() => {
               console.log("mode", mode);
-              setUpdateMode(mode);
+              setUpdatingMode(mode as UpdatingMode);
               setmodeMenuOpen(false);
+              setHeaderText(`Report - ${selectedReport?.report_name} - Mode Change`);
+              setDescriptionText(`Are you sure to change report sending mode to '${mode}'?`);
+              setHandleOKFunction("UpdateMode");
               setOpenModal(true);
             }}
           >
@@ -427,10 +456,10 @@ const ReportsTable = ({
       </Menu>
       <SlideDialog
         openModal={openModal}
-        handleOKButton={() => handleModeChange(updateMode)}
+        handleOKButton={handleActionFunction}
         setOpenModal={setOpenModal}
-        headerText={`Report - ${selectedReport?.report_name} - Mode Change`}
-        descriptionText={`Are you sure to change report sending mode to '${updateMode}'`}
+        headerText={headerText}
+        descriptionText={descriptionText}
       />
     </>
   );
