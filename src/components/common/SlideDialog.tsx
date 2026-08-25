@@ -42,9 +42,6 @@ export default function SlideDialog({
 
   return (
     <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Slide in alert dialog
-      </Button>
       <Dialog
         open={openModal}
         slots={{
