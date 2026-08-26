@@ -84,7 +84,6 @@ const DailyReports = () => {
       try {
         let responseCall;
         if (handleOKFunction === "UpdateMode") {
-          console.log("calling - UpdateMode");
           responseCall = await updateReportMode({
             reportId: apiCallReportId ?? "",
             mode: updatingMode,
@@ -96,8 +95,12 @@ const DailyReports = () => {
             showSnackbar("error", responseCall?.message ?? "Failure");
           }
         } else if (handleOKFunction === "SendReport") {
-          console.log("calling - SendReport");
           responseCall = await sendReportNow({ reportId: apiCallReportId });
+          if (responseCall?.success) {
+            showSnackbar("success", responseCall?.message ?? "Success");
+          } else {
+            showSnackbar("error", responseCall?.message ?? "Failure");
+          }
         }
         console.log("responseCall", responseCall);
       } catch (error) {
