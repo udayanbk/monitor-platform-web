@@ -11,3 +11,6 @@ export const updateReportMode = async (payload: Record<string, string | number>)
 
 export const sendReportNow = async (payload: Record<string, number>) =>
   apiRequest(api.post("/projects/reports/sendReportNow", payload));
+
+export const getSentReportLog = async (payload: Record<string, number>) =>
+  apiRequest(api.post("/projects/reports/getSentReportLog", payload));

@@ -19,6 +19,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import { getChannelStyles, getModeStyles, getProjectStyles } from "./styles";
 import { useState } from "react";
 import SlideDialog from "../../common/SlideDialog";
+import { ReportData } from "../../common/Interfaces";
+import { getSentReportLog } from "../../../services/general.service";
 
 interface ReportChannel {
   enabled: boolean;
@@ -60,7 +62,8 @@ interface ReportsTableProps {
   setHandleOKFunction: (x: OkFunction) => void;
   updatingMode: string;
   setUpdatingMode: (x: UpdatingMode) => void;
-  handleActionFunction: () => void;
+  handleActionFunction: (x: number) => void;
+  // sentReportsData: ReportData[];
 }
 
 const ReportsTable = ({
@@ -74,6 +77,7 @@ const ReportsTable = ({
   updatingMode,
   setUpdatingMode,
   handleActionFunction,
+  // sentReportsData,
 }: ReportsTableProps) => {
   const [modeAnchorEl, setModeAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
@@ -81,6 +85,7 @@ const ReportsTable = ({
   const [modeMenuOpen, setmodeMenuOpen] = useState<boolean>(false);
   const [headerText, setHeaderText] = useState<string>("");
   const [descriptionText, setDescriptionText] = useState<string>("");
+  const [sentReportsData, setSentReportsData] = useState<ReportData[]>([]);
 
   const getEnabledChannels = (channels: ReportChannels) => {
     return Object.entries(channels ?? {})
@@ -183,6 +188,7 @@ const ReportsTable = ({
   };
 
   const handleModeClick = (event: React.MouseEvent<HTMLElement>, report: Report) => {
+    setSentReportsData([]);
     console.log("repot", report);
     setApiCallReportId(report?.id);
     setModeAnchorEl(event.currentTarget);
@@ -191,6 +197,7 @@ const ReportsTable = ({
   };
 
   const handleSendReportClick = (report: Report) => {
+    setSentReportsData([]);
     setSelectedReport(report);
     console.log("reportId", report.id);
     setApiCallReportId(report?.id);
@@ -198,6 +205,29 @@ const ReportsTable = ({
     setDescriptionText(`Are you sure to send report now ?`);
     setHandleOKFunction("SendReport");
     setOpenModal(true);
+  };
+
+  const handleViewHistory = async (report: Report) => {
+    setHandleOKFunction("GetLog");
+    console.log("history clicked------------", report);
+    setSelectedReport(report);
+    setHeaderText(`History: Report Sent - ${report?.report_name}`);
+    setDescriptionText(``);
+
+    try {
+      const responseCall = await getSentReportLog({
+        reportId: report.id,
+      });
+
+      console.log("responseCall --", responseCall);
+
+      if (responseCall?.success) {
+        setSentReportsData(responseCall.data);
+        setOpenModal(true);
+      }
+    } catch (error) {
+      console.error("Failed to get report history:", error);
+    }
   };
 
   return (
@@ -402,7 +432,11 @@ const ReportsTable = ({
                         <Button
                           variant="text"
                           size="small"
-                          onClick={() => onHistory?.(report)}
+                          // onClick={() => onHistory?.(report)}
+                          onClick={() => {
+                            setApiCallReportId(report?.id);
+                            handleViewHistory(report);
+                          }}
                           sx={{
                             fontWeight: 700,
                           }}
@@ -460,6 +494,7 @@ const ReportsTable = ({
         setOpenModal={setOpenModal}
         headerText={headerText}
         descriptionText={descriptionText}
+        tableData={sentReportsData}
       />
     </>
   );

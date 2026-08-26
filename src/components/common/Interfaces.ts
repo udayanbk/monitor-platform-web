@@ -74,3 +74,10 @@ export interface SearchRenewalLog {
   logs: SearchLog;
   serviceLog: ServiceLog[];
 }
+
+export interface ReportData {
+  started_at: string;
+  trigger_type: string;
+  status: string;
+  channel: string;
+}
