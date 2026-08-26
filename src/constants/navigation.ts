@@ -44,34 +44,39 @@ export const navigation: NavigationItem[] = [
         title: "Renewal",
         path: "/projects/renewal",
       },
-      {
-        title: "HRMS",
-        path: "/projects/hrms",
-      },
-      {
-        title: "Customer Portal",
-        path: "/projects/customer-portal",
-      },
+      // {
+      //   title: "HRMS",
+      //   path: "/projects/hrms",
+      // },
+      // {
+      //   title: "Customer Portal",
+      //   path: "/projects/customer-portal",
+      // },
     ],
   },
-  {
-    title: "Events",
-    path: "/events",
-    icon: EventIcon,
-  },
-  {
-    title: "Alerts",
-    path: "/alerts",
-    icon: NotificationsIcon,
-  },
+  // {
+  //   title: "Events",
+  //   path: "/events",
+  //   icon: EventIcon,
+  // },
+  // {
+  //   title: "Alerts",
+  //   path: "/alerts",
+  //   icon: NotificationsIcon,
+  // },
   {
     title: "Daily Reports",
     path: "/daily-reports",
     icon: AssessmentIcon,
   },
   {
-    title: "Settings",
-    path: "/settings",
-    icon: SettingsIcon,
+    title: "Check Points",
+    path: "/check-points",
+    icon: AssessmentIcon,
   },
+  // {
+  //   title: "Settings",
+  //   path: "/settings",
+  //   icon: SettingsIcon,
+  // },
 ];

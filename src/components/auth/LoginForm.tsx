@@ -83,7 +83,7 @@ const LoginForm = () => {
 
           <Box textAlign="center">
             <Typography variant="h4" fontWeight={700} gutterBottom>
-              Monitor Platform
+              SBIG Neo Monitor
             </Typography>
 
             <Typography variant="body2" color="text.secondary">

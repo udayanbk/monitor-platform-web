@@ -10,6 +10,7 @@ import AlertsPage from "../pages/Alerts/AlertsPage";
 import ReportsPage from "../pages/Reports/ReportsPage";
 import SettingsPage from "../pages/Settings/SettingsPage";
 import ProjectDetailsPage from "../pages/Projects/ProjectDetailsPage";
+import CheckPointPage from "../pages/CheckPoint/CheckPointPage";
 
 const AppRoutes = () => {
   return (
@@ -32,6 +33,10 @@ const AppRoutes = () => {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/daily-reports" element={<ReportsPage />} />
+      </Route>
+
+      <Route element={<ProtectedRoute />}>
+        <Route path="/check-points" element={<CheckPointPage />} />
       </Route>
 
       <Route element={<ProtectedRoute />}>

@@ -6,7 +6,15 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import { ReportData } from "./Interfaces";
 
@@ -61,7 +69,7 @@ export default function SlideDialog({
             </DialogContentText>
           )}
 
-          {tableData && tableData.length > 0 && (
+          {tableData && tableData.length > 0 ? (
             <TableContainer sx={{ mt: 2 }}>
               <Table size="small">
                 <TableHead>
@@ -93,6 +101,8 @@ export default function SlideDialog({
                 </TableBody>
               </Table>
             </TableContainer>
+          ) : (
+            <Typography>No records..</Typography>
           )}
         </DialogContent>
         <DialogActions>

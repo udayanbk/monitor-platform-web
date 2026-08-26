@@ -38,7 +38,7 @@ export default function Sidebar() {
     >
       <Toolbar>
         <Typography variant="h5" color="primary" sx={{ fontWeight: "bold" }}>
-          Monitor
+          SBIG Neo Monitor
         </Typography>
       </Toolbar>
 

@@ -43,7 +43,7 @@ export default function Header() {
       }}
     >
       <Toolbar>
-        <Typography variant="h6">Monitor Platform</Typography>
+        <Typography variant="h6">Monitor</Typography>
 
         <Box sx={{ flexGrow: 1 }} />
 
