@@ -1,10 +1,6 @@
 import SpeedIcon from "@mui/icons-material/Speed";
 import FolderIcon from "@mui/icons-material/Folder";
-import EventIcon from "@mui/icons-material/Event";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import AssessmentIcon from "@mui/icons-material/Assessment";
-import SettingsIcon from "@mui/icons-material/Settings";
-
 import { SvgIconComponent } from "@mui/icons-material";
 
 type ChildItem = {

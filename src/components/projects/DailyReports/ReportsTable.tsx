@@ -69,12 +69,10 @@ interface ReportsTableProps {
 const ReportsTable = ({
   reports,
   setApiCallReportId,
-  onHistory,
   // handleModeChange,
   openModal,
   setOpenModal,
   setHandleOKFunction,
-  updatingMode,
   setUpdatingMode,
   handleActionFunction,
   // sentReportsData,

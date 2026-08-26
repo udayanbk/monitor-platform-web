@@ -8,7 +8,6 @@ import {
 } from "../../../services/general.service";
 import ReportsTable from "./ReportsTable";
 import { useSnackbar } from "../../../context/SnackbarContext";
-import { ReportData } from "../../common/Interfaces";
 
 interface ReportChannel {
   enabled: boolean;
