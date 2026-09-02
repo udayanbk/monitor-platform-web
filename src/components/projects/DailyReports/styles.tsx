@@ -42,7 +42,8 @@ export const getProjectStyles = (project: string) => {
   }
 };
 
-export const getChannelStyles = (channel: string) => {
+type ChannelType = "EMAIL" | "CALL" | "WHATSAPP" | "SMS";
+export const getChannelStyles = (channel: ChannelType) => {
   switch (channel) {
     case "EMAIL":
       return {

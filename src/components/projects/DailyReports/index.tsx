@@ -39,6 +39,8 @@ interface Report {
   last_status?: "SUCCESS" | "FAILED" | "IN_PROGRESS" | null;
 }
 
+type ChannelType = "EMAIL" | "CALL" | "WHATSAPP" | "SMS";
+
 const DailyReports = () => {
   const { showSnackbar } = useSnackbar();
   const limit = 7;
@@ -50,6 +52,8 @@ const DailyReports = () => {
   const [searchText, setSearchText] = useState("");
   const [updatingMode, setUpdatingMode] = useState<UpdatingMode>("PENDING");
   const [handleOKFunction, setHandleOKFunction] = useState<OkFunction>("GetLog");
+  const [channelType, setChannelType] = useState<ChannelType>("EMAIL");
+
   // const [sentReportsData, setSentReportsData] = useState<ReportData[]>([]);
 
   useEffect(() => {
@@ -107,9 +111,12 @@ const DailyReports = () => {
         } else {
           showSnackbar("error", responseCall?.message ?? "Failure");
         }
-      } else if (handleOKFunction === "SendReport" && apiCallReportId) {
+      } else if (handleOKFunction === "SendReport" && apiCallReportId && channelType) {
         console.log("In mode - SendReport");
-        responseCall = await sendReportNow({ reportId: apiCallReportId });
+        responseCall = await sendReportNow({
+          reportId: apiCallReportId,
+          channelType,
+        });
         if (responseCall?.success) {
           showSnackbar("success", responseCall?.message ?? "Success");
           await getReportsData();
@@ -117,14 +124,6 @@ const DailyReports = () => {
           showSnackbar("error", responseCall?.message ?? "Failure");
         }
       }
-      // else if (handleOKFunction === "GetLog" && rid > 0) {
-      //   console.log("In mode - GetLog");
-      //   responseCall = await getSentReportLog({ reportId: rid });
-      //   console.log("responseCall --", responseCall);
-      //   if (responseCall?.success) {
-      //     setSentReportsData(responseCall?.data);
-      //   }
-      // }
       console.log("responseCall", responseCall);
     } catch (error) {
       console.error("Failed to update report mode:", error);
@@ -133,48 +132,6 @@ const DailyReports = () => {
       setApiCallReportId(null);
     }
   };
-
-  // const handleModeChange = async (mode: string) => {
-  //   try {
-  //     console.log("sending report id", apiCallReportId);
-  //     if (handleOKFunction === "UpdateMode") {
-  //       const respCall = await updateReportMode({
-  //         reportId: apiCallReportId ?? "",
-  //         mode,
-  //       });
-  //       console.log("respCall", respCall);
-  //       if (respCall?.success) {
-  //         showSnackbar("success", respCall?.message ?? "Success");
-  //         await getReportsData();
-  //       } else {
-  //         showSnackbar("error", respCall?.message ?? "Failure");
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Failed to update report mode:", error);
-  //   } finally {
-  //     setOpenModal(false);
-  //     setApiCallReportId(null);
-  //   }
-  // };
-
-  // const handleSendReport = async () => {
-  //   try {
-  //     console.log("apiCallReportId", apiCallReportId);
-  //     if (apiCallReportId && handleOKFunction === "SendReport") {
-  //       const sendReportCall = await sendReportNow({ reportId: apiCallReportId });
-  //       console.log("sendReportCall", sendReportCall);
-  //       if (sendReportCall.success) {
-  //         showSnackbar("success", sendReportCall?.message ?? "Success");
-  //       } else {
-  //         showSnackbar("error", sendReportCall?.message ?? "Failure");
-  //       }
-  //     }
-  //   } catch (error) {
-  //   } finally {
-  //     setOpenModal(false);
-  //   }
-  // };
 
   return (
     <Box>
@@ -205,13 +162,12 @@ const DailyReports = () => {
           }}
           updatingMode={updatingMode}
           setUpdatingMode={setUpdatingMode}
-          // handleModeChange={handleModeChange}
-          // handleSendReport={handleSendReport}
           openModal={openModal}
           setOpenModal={setOpenModal}
           setHandleOKFunction={setHandleOKFunction}
           handleActionFunction={handleActionFunction}
-          // sentReportsData={sentReportsData}
+          setChannelType={setChannelType}
+          channelType={channelType}
         />
       )}
       <Pagination

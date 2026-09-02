@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   Chip,
@@ -13,11 +14,16 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import HistoryIcon from "@mui/icons-material/History";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import EmailIcon from "@mui/icons-material/Email";
+import CallIcon from "@mui/icons-material/Call";
+import SmsIcon from "@mui/icons-material/Sms";
 import { Menu, MenuItem } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import CheckIcon from "@mui/icons-material/Check";
 import { getChannelStyles, getModeStyles, getProjectStyles } from "./styles";
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import SlideDialog from "../../common/SlideDialog";
 import { ReportData } from "../../common/Interfaces";
 import { getSentReportLog } from "../../../services/general.service";
@@ -52,6 +58,8 @@ export interface Report {
   last_status?: "SUCCESS" | "FAILED" | "IN_PROGRESS" | null;
 }
 
+type ChannelType = "EMAIL" | "CALL" | "WHATSAPP" | "SMS";
+
 interface ReportsTableProps {
   reports: Report[];
   setApiCallReportId: (id: number | null) => void;
@@ -63,8 +71,44 @@ interface ReportsTableProps {
   updatingMode: string;
   setUpdatingMode: (x: UpdatingMode) => void;
   handleActionFunction: (x: number) => void;
+  channelType: ChannelType;
+  setChannelType: (x: ChannelType) => void;
   // sentReportsData: ReportData[];
 }
+
+const getChannelIcon = (channel: ChannelType): ReactElement | undefined => {
+  switch (channel) {
+    case "EMAIL":
+      return <EmailIcon fontSize="large" />;
+    case "SMS":
+      return <SmsIcon fontSize="large" />;
+    case "WHATSAPP":
+      return <WhatsAppIcon fontSize="large" />;
+    case "CALL":
+      return <CallIcon fontSize="large" />;
+    default:
+      return undefined;
+  }
+};
+
+const getChannelActionText = (channel: ChannelType): string => {
+  switch (channel) {
+    case "EMAIL":
+      return "Send Email";
+
+    case "WHATSAPP":
+      return "Send WhatsApp";
+
+    case "SMS":
+      return "Send SMS";
+
+    case "CALL":
+      return "Call Now";
+
+    default:
+      return "";
+  }
+};
 
 const ReportsTable = ({
   reports,
@@ -75,6 +119,8 @@ const ReportsTable = ({
   setHandleOKFunction,
   setUpdatingMode,
   handleActionFunction,
+  channelType,
+  setChannelType,
   // sentReportsData,
 }: ReportsTableProps) => {
   const [modeAnchorEl, setModeAnchorEl] = useState<null | HTMLElement>(null);
@@ -194,13 +240,14 @@ const ReportsTable = ({
     setmodeMenuOpen(true);
   };
 
-  const handleSendReportClick = (report: Report) => {
+  const handleSendReportClick = (report: Report, channel: ChannelType) => {
     setSentReportsData([]);
+    setChannelType(channel);
     setSelectedReport(report);
     console.log("reportId", report.id);
     setApiCallReportId(report?.id);
-    setHeaderText(`Send Report Now - ${report?.report_name}`);
-    setDescriptionText(`Are you sure to send report now ?`);
+    setHeaderText(`Send ${channel} on ${report?.report_name}`);
+    setDescriptionText(`Are you sure to send ${channel} report now ?`);
     setHandleOKFunction("SendReport");
     setOpenModal(true);
   };
@@ -240,34 +287,34 @@ const ReportsTable = ({
           overflow: "auto",
         }}
       >
-        <Table sx={{ minWidth: 1250 }}>
+        <Table sx={{ minWidth: 1250, tableLayout: "fixed" }}>
           <TableHead>
             <TableRow
               sx={{
                 backgroundColor: "action.hover",
               }}
             >
-              <TableCell sx={{ fontWeight: 700 }}>Report</TableCell>
+              <TableCell sx={{ width: "20%", fontWeight: 700 }}>Report</TableCell>
 
-              <TableCell sx={{ fontWeight: 700 }}>Project</TableCell>
+              <TableCell sx={{ width: "9%", fontWeight: 700 }}>Project</TableCell>
 
-              <TableCell sx={{ fontWeight: 700 }}>Mode</TableCell>
+              <TableCell sx={{ width: "10%", fontWeight: 700 }}>Mode</TableCell>
 
-              <TableCell sx={{ fontWeight: 700 }}>Schedule</TableCell>
+              <TableCell sx={{ width: "9%", fontWeight: 700 }}>Schedule</TableCell>
 
-              <TableCell sx={{ fontWeight: 700 }}>Channels</TableCell>
+              <TableCell sx={{ width: "15%", fontWeight: 700 }}>Channels</TableCell>
 
-              <TableCell sx={{ fontWeight: 700 }}>Status</TableCell>
+              <TableCell sx={{ width: "9%", fontWeight: 700 }}>Status</TableCell>
 
-              <TableCell sx={{ fontWeight: 700 }}>Last Sent</TableCell>
+              <TableCell sx={{ width: "9%", fontWeight: 700 }}>Last Sent</TableCell>
 
-              <TableCell sx={{ fontWeight: 700 }}>Triggered By</TableCell>
+              <TableCell sx={{ width: "9%", fontWeight: 700 }}>Triggered By</TableCell>
 
               <TableCell
                 align="center"
                 sx={{
                   fontWeight: 700,
-                  minWidth: 190,
+                  width: "10%",
                 }}
               >
                 Actions
@@ -300,7 +347,7 @@ const ReportsTable = ({
                       },
                     }}
                   >
-                    <TableCell sx={{ minWidth: 240 }}>
+                    <TableCell>
                       <Tooltip title={report.description ?? ""} placement="top-start">
                         <Box>
                           <Typography variant="body2" fontWeight={700}>
@@ -322,6 +369,8 @@ const ReportsTable = ({
                         sx={{
                           ...getProjectStyles(report.project),
                           fontWeight: 600,
+                          width: "100%",
+                          height: 30,
                         }}
                       />
                     </TableCell>
@@ -342,6 +391,8 @@ const ReportsTable = ({
                         onDelete={() => {}}
                         sx={{
                           ...getModeStyles(report.mode),
+                          width: "100%",
+                          height: 30,
                           fontWeight: 600,
                           cursor: "pointer",
                           "& .MuiChip-deleteIcon": {
@@ -358,44 +409,63 @@ const ReportsTable = ({
                       </Typography>
                     </TableCell>
 
-                    <TableCell sx={{ minWidth: 160 }}>
-                      <Stack
-                        direction="column"
-                        spacing={0.5}
-                        useFlexGap
-                        flexWrap="wrap"
-                        alignItems="flex-start"
-                      >
-                        {channels.length > 0 ? (
-                          channels.map((channel) => (
-                            <Chip
-                              key={channel}
-                              label={channel}
-                              size="small"
-                              variant="outlined"
-                              sx={{
-                                ...getChannelStyles(channel),
-                                fontWeight: 600,
-                              }}
-                            />
-                          ))
-                        ) : (
-                          <Typography variant="body2" color="text.secondary">
-                            —
-                          </Typography>
-                        )}
-                      </Stack>
+                    <TableCell sx={{ minWidth: 120 }}>
+                      {channels.length > 0 ? (
+                        <Box
+                          sx={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(2, 50px)",
+                            columnGap: 1, // horizontal gap
+                            rowGap: 1, // vertical gap
+                            justifyContent: "center",
+                          }}
+                        >
+                          {channels.map((channel) => {
+                            const channelType = channel as ChannelType;
+
+                            return (
+                              <Tooltip
+                                key={channel}
+                                title={getChannelActionText(channelType)}
+                                arrow
+                              >
+                                <Avatar
+                                  sx={{
+                                    width: 50,
+                                    height: 50,
+                                    cursor: "pointer",
+                                    border: "1px solid",
+                                    ...getChannelStyles(channelType),
+                                  }}
+                                  onClick={() => handleSendReportClick(report, channelType)}
+                                >
+                                  {getChannelIcon(channelType)}
+                                </Avatar>
+                              </Tooltip>
+                            );
+                          })}
+                        </Box>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">
+                          —
+                        </Typography>
+                      )}
                     </TableCell>
 
                     <TableCell>
                       <Chip
+                        sx={{
+                          width: "100%",
+                          height: 30,
+                          justifyContent: "center",
+                        }}
                         label={getStatusLabel(report.last_status)}
                         color={getStatusColor(report.last_status)}
                         size="small"
                       />
                     </TableCell>
 
-                    <TableCell sx={{ minWidth: 165 }}>
+                    <TableCell>
                       <Typography variant="body2">{formatDateTime(report.last_sent_at)}</Typography>
                     </TableCell>
 
@@ -411,10 +481,9 @@ const ReportsTable = ({
 
                     <TableCell align="center">
                       <Stack direction="row" spacing={1} justifyContent="center">
-                        <Button
+                        {/* <Button
                           variant="outlined"
                           size="small"
-                          // disabled={loading || report.enabled !== 1}
                           onClick={() => {
                             handleSendReportClick(report);
                           }}
@@ -423,11 +492,10 @@ const ReportsTable = ({
                             whiteSpace: "nowrap",
                           }}
                         >
-                          {/* {loading ? "Sending..." : "Send"} */}
                           {"Send"}
-                        </Button>
+                        </Button> */}
 
-                        <Button
+                        {/* <Button
                           variant="text"
                           size="small"
                           // onClick={() => onHistory?.(report)}
@@ -440,7 +508,21 @@ const ReportsTable = ({
                           }}
                         >
                           History
-                        </Button>
+                        </Button> */}
+                        <Avatar
+                          sx={{
+                            width: 50,
+                            height: 50,
+                            bgcolor: "primary.main",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            setApiCallReportId(report?.id);
+                            handleViewHistory(report);
+                          }}
+                        >
+                          <HistoryIcon sx={{ fontSize: 38 }} />
+                        </Avatar>
                       </Stack>
                     </TableCell>
                   </TableRow>
