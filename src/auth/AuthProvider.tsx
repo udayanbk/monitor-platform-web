@@ -1,47 +1,43 @@
-import { ReactNode, useState } from "react";
-import AuthContext from "./AuthContext";
-import { User } from "./auth.types";
+import { ReactNode, useEffect, useState } from "react";
+import { getCurrentUser } from "../api/auth.api";
+import { useAuthStore } from "./auth.store";
 
 interface Props {
   children: ReactNode;
 }
 
 const AuthProvider = ({ children }: Props) => {
-  const [token, setToken] = useState<string | null>(localStorage.getItem("accessToken"));
+  const login = useAuthStore((state) => state.login);
+  const logout = useAuthStore((state) => state.logout);
 
-  const [user, setUser] = useState<User | null>(() => {
-    const data = localStorage.getItem("user");
-    return data ? JSON.parse(data) : null;
-  });
+  const [loading, setLoading] = useState(true);
 
-  const login = (token: string, user: User) => {
-    localStorage.setItem("accessToken", token);
-    localStorage.setItem("user", JSON.stringify(user));
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        const response = await getCurrentUser();
 
-    setToken(token);
-    setUser(user);
-  };
+        if (response?.data?.user) {
+          login(response.data.user);
+        } else {
+          logout();
+        }
+      } catch (error) {
+        console.error("Session restore failed:", error);
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const logout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("user");
-    setToken(null);
-    setUser(null);
-  };
+    restoreSession();
+  }, [login, logout]);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        token,
-        user,
-        isAuthenticated: !!token,
-        login,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  if (loading) {
+    return null;
+  }
+
+  return <>{children}</>;
 };
 
 export default AuthProvider;

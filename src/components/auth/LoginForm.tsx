@@ -49,7 +49,7 @@ const LoginForm = () => {
 
       console.log(response);
 
-      signIn(response.data.accessToken, response.data.user);
+      signIn(response.data.user);
       navigate("/", { replace: true });
     } catch (error: any) {
       setError(error?.response?.data?.message ?? "Invalid Employee ID or Password");
