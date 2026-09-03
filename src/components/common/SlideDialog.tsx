@@ -25,6 +25,7 @@ interface DialogSlideInterface {
   headerText: string;
   descriptionText: string;
   tableData?: ReportData[];
+  dialogType: "history" | "send";
 }
 
 const Transition = React.forwardRef(function Transition(
@@ -43,6 +44,7 @@ export default function SlideDialog({
   headerText,
   descriptionText,
   tableData,
+  dialogType,
 }: DialogSlideInterface) {
   console.log("table data in slideDialog------------", tableData);
   const handleClose = () => {
@@ -63,46 +65,48 @@ export default function SlideDialog({
       >
         <DialogTitle>{headerText}</DialogTitle>
         <DialogContent>
-          {descriptionText && (
-            <DialogContentText id="alert-dialog-slide-description">
-              {descriptionText}
-            </DialogContentText>
-          )}
-
-          {tableData && tableData.length > 0 ? (
-            <TableContainer sx={{ mt: 2 }}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">
-                      <strong>Date</strong>
-                    </TableCell>
-                    <TableCell align="center">
-                      <strong>Mode</strong>
-                    </TableCell>
-                    <TableCell align="center">
-                      <strong>Channel</strong>
-                    </TableCell>
-                    <TableCell align="center">
-                      <strong>Status</strong>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-
-                <TableBody>
-                  {tableData.map((row, index) => (
-                    <TableRow key={index}>
-                      <TableCell align="center">{row.started_at ?? "-"}</TableCell>
-                      <TableCell align="center">{row.trigger_type ?? "-"}</TableCell>
-                      <TableCell align="center">{row.channel ?? "-"}</TableCell>
-                      <TableCell align="center">{row.status ?? "-"}</TableCell>
+          {dialogType === "history" ? (
+            tableData && tableData.length > 0 ? (
+              <TableContainer sx={{ mt: 2 }}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell align="center">
+                        <strong>Date</strong>
+                      </TableCell>
+                      <TableCell align="center">
+                        <strong>Mode</strong>
+                      </TableCell>
+                      <TableCell align="center">
+                        <strong>Channel</strong>
+                      </TableCell>
+                      <TableCell align="center">
+                        <strong>Status</strong>
+                      </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+
+                  <TableBody>
+                    {tableData.map((row, index) => (
+                      <TableRow key={index}>
+                        <TableCell align="center">{row.started_at ?? "-"}</TableCell>
+                        <TableCell align="center">{row.trigger_type ?? "-"}</TableCell>
+                        <TableCell align="center">{row.channel ?? "-"}</TableCell>
+                        <TableCell align="center">{row.status ?? "-"}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <Typography>No records..</Typography>
+            )
           ) : (
-            <Typography>No records..</Typography>
+            descriptionText && (
+              <DialogContentText id="alert-dialog-slide-description">
+                {descriptionText}
+              </DialogContentText>
+            )
           )}
         </DialogContent>
         <DialogActions>

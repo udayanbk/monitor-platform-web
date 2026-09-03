@@ -91,11 +91,11 @@ const DailyReports = () => {
     }
   };
 
-  const handleActionFunction = async (rid: number) => {
+  const handleActionFunction = async () => {
     console.log("handleActionFunction function starts");
     console.log("handleOKFunction", handleOKFunction);
     console.log("apiCallReportId", apiCallReportId);
-    console.log("rid", rid);
+    console.log("channelType", channelType);
     try {
       let responseCall;
       console.log("handleOKFunction", handleOKFunction);

@@ -110,6 +110,13 @@ const getChannelActionText = (channel: ChannelType): string => {
   }
 };
 
+const returnChannel = (channel: ChannelType) => {
+  if (channel === "CALL") return "Call";
+  else if (channel === "EMAIL") return "Email";
+  else if (channel === "SMS") return "SMS";
+  else if (channel === "WHATSAPP") return "WhatsApp";
+};
+
 const ReportsTable = ({
   reports,
   setApiCallReportId,
@@ -130,6 +137,7 @@ const ReportsTable = ({
   const [headerText, setHeaderText] = useState<string>("");
   const [descriptionText, setDescriptionText] = useState<string>("");
   const [sentReportsData, setSentReportsData] = useState<ReportData[]>([]);
+  const [dialogType, setDialogType] = useState<"history" | "send">("send");
 
   const getEnabledChannels = (channels: ReportChannels) => {
     return Object.entries(channels ?? {})
@@ -175,41 +183,6 @@ const ReportsTable = ({
     }
   };
 
-  const formatSchedule = (schedule?: string | null) => {
-    if (!schedule) {
-      return "—";
-    }
-
-    const parts = schedule.trim().split(/\s+/);
-
-    if (parts.length !== 5) {
-      return schedule;
-    }
-
-    const minute = Number(parts[0]);
-    const hour = Number(parts[1]);
-
-    if (
-      Number.isNaN(minute) ||
-      Number.isNaN(hour) ||
-      minute < 0 ||
-      minute > 59 ||
-      hour < 0 ||
-      hour > 23
-    ) {
-      return schedule;
-    }
-
-    const date = new Date();
-    date.setHours(hour, minute, 0, 0);
-
-    return date.toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
-
   const formatDateTime = (date?: string | null) => {
     if (!date) {
       return "—";
@@ -246,8 +219,8 @@ const ReportsTable = ({
     setSelectedReport(report);
     console.log("reportId", report.id);
     setApiCallReportId(report?.id);
-    setHeaderText(`Send ${channel} on ${report?.report_name}`);
-    setDescriptionText(`Are you sure to send ${channel} report now ?`);
+    setHeaderText(`Send ${returnChannel(channel)} on ${report?.report_name}`);
+    setDescriptionText(`Are you sure to send ${returnChannel(channel)} report now ?`);
     setHandleOKFunction("SendReport");
     setOpenModal(true);
   };
@@ -296,15 +269,25 @@ const ReportsTable = ({
             >
               <TableCell sx={{ width: "20%", fontWeight: 700 }}>Report</TableCell>
 
-              <TableCell sx={{ width: "9%", fontWeight: 700 }}>Project</TableCell>
+              <TableCell sx={{ width: "9%", fontWeight: 700, textAlign: "center" }}>
+                Project
+              </TableCell>
 
-              <TableCell sx={{ width: "10%", fontWeight: 700 }}>Mode</TableCell>
+              <TableCell sx={{ width: "10%", fontWeight: 700, textAlign: "center" }}>
+                Mode
+              </TableCell>
 
-              <TableCell sx={{ width: "9%", fontWeight: 700 }}>Schedule</TableCell>
+              <TableCell sx={{ width: "9%", fontWeight: 700, textAlign: "center" }}>
+                Schedule
+              </TableCell>
 
-              <TableCell sx={{ width: "15%", fontWeight: 700 }}>Channels</TableCell>
+              <TableCell sx={{ width: "15%", fontWeight: 700, textAlign: "center" }}>
+                Channels
+              </TableCell>
 
-              <TableCell sx={{ width: "9%", fontWeight: 700 }}>Status</TableCell>
+              <TableCell sx={{ width: "9%", fontWeight: 700, textAlign: "center" }}>
+                Status
+              </TableCell>
 
               <TableCell sx={{ width: "9%", fontWeight: 700 }}>Last Sent</TableCell>
 
@@ -405,7 +388,7 @@ const ReportsTable = ({
 
                     <TableCell>
                       <Typography variant="body2" fontWeight={500}>
-                        {formatSchedule(report.schedule)}
+                        {report.schedule}
                       </Typography>
                     </TableCell>
 
@@ -437,7 +420,10 @@ const ReportsTable = ({
                                     border: "1px solid",
                                     ...getChannelStyles(channelType),
                                   }}
-                                  onClick={() => handleSendReportClick(report, channelType)}
+                                  onClick={() => {
+                                    setDialogType("send");
+                                    handleSendReportClick(report, channelType);
+                                  }}
                                 >
                                   {getChannelIcon(channelType)}
                                 </Avatar>
@@ -481,34 +467,6 @@ const ReportsTable = ({
 
                     <TableCell align="center">
                       <Stack direction="row" spacing={1} justifyContent="center">
-                        {/* <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => {
-                            handleSendReportClick(report);
-                          }}
-                          sx={{
-                            fontWeight: 700,
-                            whiteSpace: "nowrap",
-                          }}
-                        >
-                          {"Send"}
-                        </Button> */}
-
-                        {/* <Button
-                          variant="text"
-                          size="small"
-                          // onClick={() => onHistory?.(report)}
-                          onClick={() => {
-                            setApiCallReportId(report?.id);
-                            handleViewHistory(report);
-                          }}
-                          sx={{
-                            fontWeight: 700,
-                          }}
-                        >
-                          History
-                        </Button> */}
                         <Avatar
                           sx={{
                             width: 50,
@@ -517,6 +475,7 @@ const ReportsTable = ({
                             cursor: "pointer",
                           }}
                           onClick={() => {
+                            setDialogType("history");
                             setApiCallReportId(report?.id);
                             handleViewHistory(report);
                           }}
@@ -575,6 +534,7 @@ const ReportsTable = ({
         headerText={headerText}
         descriptionText={descriptionText}
         tableData={sentReportsData}
+        dialogType={dialogType}
       />
     </>
   );

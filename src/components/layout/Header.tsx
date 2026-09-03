@@ -1,7 +1,5 @@
 import { AppBar, Toolbar, Typography, Box, IconButton, Menu, MenuItem } from "@mui/material";
-
-import RefreshIcon from "@mui/icons-material/Refresh";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import Avatar from "@mui/material/Avatar";
 import { logout as logoutApi } from "../../api/auth.api";
 import useAuth from "../../auth/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -10,8 +8,31 @@ import { useState } from "react";
 
 const drawerWidth = 260;
 
+function stringToColor(string: string) {
+  let hash = 0;
+  let i;
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  let color = "#";
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+  return color;
+}
+
+function stringAvatar(name: string) {
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+  };
+}
+
 export default function Header() {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -46,13 +67,9 @@ export default function Header() {
         <Typography variant="h6">Monitor</Typography>
 
         <Box sx={{ flexGrow: 1 }} />
-
-        <IconButton color="inherit">
-          <RefreshIcon />
-        </IconButton>
-
+        <Typography>{user?.name}</Typography>
         <IconButton color="inherit" onClick={handleMenuOpen}>
-          <AccountCircleIcon />
+          <Avatar {...stringAvatar(user?.name as string)} />
         </IconButton>
 
         <Menu
