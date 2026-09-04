@@ -1,7 +1,6 @@
 import {
   Avatar,
   Box,
-  Button,
   Chip,
   Paper,
   Stack,
@@ -64,7 +63,6 @@ interface ReportsTableProps {
   reports: Report[];
   setApiCallReportId: (id: number | null) => void;
   onHistory?: (report: Report) => void;
-  // handleModeChange: (mode: string) => void;
   openModal: boolean;
   setOpenModal: (x: boolean) => void;
   setHandleOKFunction: (x: OkFunction) => void;
@@ -73,7 +71,6 @@ interface ReportsTableProps {
   handleActionFunction: (x: number) => void;
   channelType: ChannelType;
   setChannelType: (x: ChannelType) => void;
-  // sentReportsData: ReportData[];
 }
 
 const getChannelIcon = (channel: ChannelType): ReactElement | undefined => {
@@ -126,13 +123,11 @@ const ReportsTable = ({
   setHandleOKFunction,
   setUpdatingMode,
   handleActionFunction,
-  channelType,
   setChannelType,
   // sentReportsData,
 }: ReportsTableProps) => {
   const [modeAnchorEl, setModeAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
-  // const [updateMode, setUpdateMode] = useState<string>("");
   const [modeMenuOpen, setmodeMenuOpen] = useState<boolean>(false);
   const [headerText, setHeaderText] = useState<string>("");
   const [descriptionText, setDescriptionText] = useState<string>("");
@@ -317,9 +312,6 @@ const ReportsTable = ({
             ) : (
               reports.map((report) => {
                 const channels = getEnabledChannels(report.channels);
-
-                // const loading = sendingReportId === report.id;
-
                 return (
                   <TableRow
                     key={report.report_code}
