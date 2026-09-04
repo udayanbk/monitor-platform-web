@@ -48,7 +48,7 @@ const DailyReports = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [reports, setReports] = useState<Report[] | null>(null);
-  const [apiCallReportId, setApiCallReportId] = useState<number | null>(null);
+  const [apiCallReportCode, setApiCallReportCode] = useState<string | null>(null);
   const [searchText, setSearchText] = useState("");
   const [updatingMode, setUpdatingMode] = useState<UpdatingMode>("PENDING");
   const [handleOKFunction, setHandleOKFunction] = useState<OkFunction>("GetLog");
@@ -75,7 +75,7 @@ const DailyReports = () => {
       setReports(reports.data);
       setTotalPages(reports.pagination.totalPages);
     }
-    const tableData = await getSentReportLog({ reportId: 18 });
+    const tableData = await getSentReportLog({ reportCode: "18" });
     console.log("tableData", tableData);
   };
 
@@ -94,15 +94,15 @@ const DailyReports = () => {
   const handleActionFunction = async () => {
     console.log("handleActionFunction function starts");
     console.log("handleOKFunction", handleOKFunction);
-    console.log("apiCallReportId", apiCallReportId);
+    console.log("apiCallReportCode", apiCallReportCode);
     console.log("channelType", channelType);
     try {
       let responseCall;
       console.log("handleOKFunction", handleOKFunction);
-      if (handleOKFunction === "UpdateMode" && apiCallReportId && updatingMode) {
+      if (handleOKFunction === "UpdateMode" && apiCallReportCode && updatingMode) {
         console.log("In mode - UpdateMode");
         responseCall = await updateReportMode({
-          reportId: apiCallReportId ?? "",
+          reportCode: apiCallReportCode ?? "",
           mode: updatingMode,
         });
         if (responseCall?.success) {
@@ -111,10 +111,10 @@ const DailyReports = () => {
         } else {
           showSnackbar("error", responseCall?.message ?? "Failure");
         }
-      } else if (handleOKFunction === "SendReport" && apiCallReportId && channelType) {
+      } else if (handleOKFunction === "SendReport" && apiCallReportCode && channelType) {
         console.log("In mode - SendReport");
         responseCall = await sendReportNow({
-          reportId: apiCallReportId,
+          reportCode: apiCallReportCode,
           channelType,
         });
         if (responseCall?.success) {
@@ -129,7 +129,7 @@ const DailyReports = () => {
       console.error("Failed to update report mode:", error);
     } finally {
       setOpenModal(false);
-      setApiCallReportId(null);
+      setApiCallReportCode(null);
     }
   };
 
@@ -156,7 +156,7 @@ const DailyReports = () => {
       {reports && (
         <ReportsTable
           reports={reports}
-          setApiCallReportId={setApiCallReportId}
+          setApiCallReportCode={setApiCallReportCode}
           onHistory={(report) => {
             console.log("History:", report);
           }}

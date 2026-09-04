@@ -61,7 +61,7 @@ type ChannelType = "EMAIL" | "CALL" | "WHATSAPP" | "SMS";
 
 interface ReportsTableProps {
   reports: Report[];
-  setApiCallReportId: (id: number | null) => void;
+  setApiCallReportCode: (id: string | null) => void;
   onHistory?: (report: Report) => void;
   openModal: boolean;
   setOpenModal: (x: boolean) => void;
@@ -116,7 +116,7 @@ const returnChannel = (channel: ChannelType) => {
 
 const ReportsTable = ({
   reports,
-  setApiCallReportId,
+  setApiCallReportCode,
   // handleModeChange,
   openModal,
   setOpenModal,
@@ -202,7 +202,7 @@ const ReportsTable = ({
   const handleModeClick = (event: React.MouseEvent<HTMLElement>, report: Report) => {
     setSentReportsData([]);
     console.log("repot", report);
-    setApiCallReportId(report?.id);
+    setApiCallReportCode(report?.report_code);
     setModeAnchorEl(event.currentTarget);
     setSelectedReport(report);
     setmodeMenuOpen(true);
@@ -212,8 +212,8 @@ const ReportsTable = ({
     setSentReportsData([]);
     setChannelType(channel);
     setSelectedReport(report);
-    console.log("reportId", report.id);
-    setApiCallReportId(report?.id);
+    console.log("reportCode", report.report_code);
+    setApiCallReportCode(report?.report_code);
     setHeaderText(`Send ${returnChannel(channel)} on ${report?.report_name}`);
     setDescriptionText(`Are you sure to send ${returnChannel(channel)} report now ?`);
     setHandleOKFunction("SendReport");
@@ -229,7 +229,7 @@ const ReportsTable = ({
 
     try {
       const responseCall = await getSentReportLog({
-        reportId: report.id,
+        reportCode: report.report_code,
       });
 
       console.log("responseCall --", responseCall);
@@ -468,7 +468,7 @@ const ReportsTable = ({
                           }}
                           onClick={() => {
                             setDialogType("history");
-                            setApiCallReportId(report?.id);
+                            setApiCallReportCode(report?.report_code);
                             handleViewHistory(report);
                           }}
                         >
