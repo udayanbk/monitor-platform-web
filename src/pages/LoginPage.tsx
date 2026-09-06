@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import LoginForm from "../components/auth/LoginForm";
+import image from "../../public/sbi-general-image.png";
 
 const LoginPage = () => {
   return (
@@ -9,11 +10,16 @@ const LoginPage = () => {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        bgcolor: "background.default",
-        px: 2,
+        backgroundImage: `url(${image})`,
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "contain",
+        backgroundPosition: "center",
+        overflow: "hidden",
       }}
     >
-      <LoginForm />
+      <Box sx={{ mt: 24 }}>
+        <LoginForm />
+      </Box>
     </Box>
   );
 };

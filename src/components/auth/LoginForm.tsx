@@ -67,10 +67,11 @@ const LoginForm = () => {
           sm: 420,
         },
         borderRadius: 3,
+        backgroundColor: "lightblue",
       }}
     >
-      <CardContent component="form" onSubmit={handleSubmit} sx={{ p: 5 }}>
-        <Stack spacing={3} alignItems="center">
+      <CardContent component="form" onSubmit={handleSubmit} sx={{ p: 4 }}>
+        <Stack spacing={2} alignItems="center">
           <Avatar
             sx={{
               width: 72,
@@ -92,7 +93,10 @@ const LoginForm = () => {
           </Box>
 
           {error && (
-            <Alert severity="error" sx={{ width: "100%" }}>
+            <Alert
+              severity="error"
+              sx={{ width: "100%", backgroundColor: "lightblue", color: "red" }}
+            >
               {error}
             </Alert>
           )}
@@ -153,10 +157,36 @@ const LoginForm = () => {
               "Sign In"
             )}
           </Button>
+          <Button
+            fullWidth
+            variant="contained"
+            type="button"
+            size="large"
+            disabled={loading}
+            sx={{
+              height: 48,
+              borderRadius: 2,
+              fontWeight: 600,
+              bgcolor: "#F58220",
+              color: "#fff",
+              "&:hover": {
+                bgcolor: "#D96F12",
+              },
+            }}
+          >
+            {loading ? (
+              <>
+                <CircularProgress size={20} color="inherit" sx={{ mr: 1 }} />
+                Registering...
+              </>
+            ) : (
+              "Register"
+            )}
+          </Button>
 
-          <Typography variant="caption" color="text.secondary">
+          {/* <Typography variant="caption" color="text.secondary">
             Version 1.0.0
-          </Typography>
+          </Typography> */}
         </Stack>
       </CardContent>
     </Card>
