@@ -68,6 +68,7 @@ export interface ServiceLog {
   response_timestamp: string;
   request_json: Record<string, any>;
   response_json: Record<string, any>;
+  apiService: string;
 }
 
 export interface SearchRenewalLog {

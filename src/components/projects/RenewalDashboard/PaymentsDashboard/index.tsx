@@ -1,4 +1,4 @@
-import { Grid, Stack } from "@mui/material";
+import { Box, Grid, Stack } from "@mui/material";
 
 import InvestigationSection from "./InvestigationSection";
 import { useEffect, useState } from "react";
@@ -116,10 +116,10 @@ const PaymentsDashboard = () => {
   }, []);
 
   return (
-    <Grid container spacing={3}>
-      {/* Left column */}
-      <Grid size={{ xs: 12, lg: 10 }}>
-        <Stack spacing={3}>
+    <>
+      <Grid container spacing={3}>
+        <Grid size={{ xs: 12, lg: 8 }}>
+          {/* <Stack spacing={3}> */}
           <SummarySection
             summaryCards={[
               {
@@ -127,97 +127,70 @@ const PaymentsDashboard = () => {
                 value: summary?.totalSearch ?? "--",
               },
               {
-                title: "Total Payments",
+                title: "Total no of Payments",
                 value: summary?.totalPayments ?? "--",
+                subtitle: "Today",
               },
             ]}
             splitCards={[
               {
-                title: "Success",
+                title: "Success Today",
                 data: summary?.successful,
               },
               {
-                title: "Failed",
+                title: "Failed Today",
                 data: summary?.failed,
               },
             ]}
           />
-          <InvestigationSection />
-        </Stack>
+          {/* </Stack> */}
+        </Grid>
+        <Grid size={{ xs: 12, lg: 4 }}>
+          <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
+            {activity && (
+              <Box sx={{ width: "50%" }}>
+                <ActivityCard
+                  title="Last 24 Hours"
+                  variant="split"
+                  sections={[
+                    {
+                      title: "Success",
+                      values: activity.last24Hours?.successful ?? {},
+                    },
+                    {
+                      title: "Fail",
+                      values: activity.last24Hours?.failed ?? {},
+                    },
+                  ]}
+                />
+              </Box>
+            )}
+
+            {yesterdayActivity && (
+              <Box sx={{ width: "50%" }}>
+                <ActivityCard
+                  title={`Yesterday - ${yesterdayActivity?.paymentDate}`}
+                  variant="split"
+                  sections={[
+                    {
+                      title: "Success",
+                      values: yesterdayActivity?.successful ?? {},
+                    },
+                    {
+                      title: "Fail",
+                      values: yesterdayActivity?.failed ?? {},
+                    },
+                  ]}
+                  button={true}
+                  buttonName="Re-Push"
+                  functionCall={handleClickOpen}
+                />
+              </Box>
+            )}
+          </Stack>
+        </Grid>
       </Grid>
-
-      {/* Right column */}
-      <Grid size={{ xs: 12, lg: 2 }}>
-        <Stack spacing={2}>
-          {yesterdayActivity && (
-            <ActivityCard
-              title={`Yesterday - ${yesterdayActivity?.paymentDate}`}
-              variant="split"
-              sections={[
-                {
-                  title: "Success",
-                  values: yesterdayActivity?.successful ?? {},
-                },
-                {
-                  title: "Fail",
-                  values: yesterdayActivity?.failed ?? {},
-                },
-              ]}
-              button={true}
-              buttonName="Re-Push"
-              functionCall={handleClickOpen}
-            />
-          )}
-          {activity && (
-            <>
-              <ActivityCard
-                title="Last 1 Hour"
-                variant="split"
-                sections={[
-                  {
-                    title: "Success",
-                    values: activity.lastHour?.successful ?? {},
-                  },
-                  {
-                    title: "Fail",
-                    values: activity.lastHour?.failed ?? {},
-                  },
-                ]}
-              />
-
-              <ActivityCard
-                title="Last 24 Hours"
-                variant="split"
-                sections={[
-                  {
-                    title: "Success",
-                    values: activity.last24Hours?.successful ?? {},
-                  },
-                  {
-                    title: "Fail",
-                    values: activity.last24Hours?.failed ?? {},
-                  },
-                ]}
-              />
-
-              <ActivityCard
-                title="Last 30 Days"
-                variant="split"
-                sections={[
-                  {
-                    title: "Success",
-                    values: activity.last30Days?.successful ?? {},
-                  },
-                  {
-                    title: "Fail",
-                    values: activity.last30Days?.failed ?? {},
-                  },
-                ]}
-              />
-            </>
-          )}
-        </Stack>
-      </Grid>
+      <InvestigationSection />
       <Dialog
         open={open}
         slots={{
@@ -251,7 +224,7 @@ const PaymentsDashboard = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Grid>
+    </>
   );
 };
 

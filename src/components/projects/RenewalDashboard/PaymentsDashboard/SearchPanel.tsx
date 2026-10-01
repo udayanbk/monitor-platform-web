@@ -262,10 +262,10 @@ const SearchPanel = () => {
                         Time Stamp
                       </StyledTableCell>
                       <StyledTableCell align="center" width={"30%"}>
-                        Request
+                        Service Url
                       </StyledTableCell>
                       <StyledTableCell align="center" width={"55%"}>
-                        Response
+                        Request & Response
                       </StyledTableCell>
                     </TableRow>
                   </TableHead>
@@ -287,7 +287,8 @@ const SearchPanel = () => {
                             </StyledTableCell>
 
                             <StyledTableCell align="center">
-                              {isExpanded ? "▲" : "▼"}
+                              {/* {isExpanded ? "▲" : "▼"} */}
+                              {row?.apiService}
                             </StyledTableCell>
 
                             <StyledTableCell align="center">Click to view logs</StyledTableCell>

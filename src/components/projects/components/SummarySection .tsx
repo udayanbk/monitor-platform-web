@@ -7,6 +7,7 @@ import SplitSummaryCard from "../../cards/SplitSummaryCard";
 
 interface SummaryCardItem {
   title: string;
+  subtitle?: string;
   value: number | string;
 }
 
@@ -37,7 +38,12 @@ const SummarySection = ({
           size={{ xs: 12, md: mdSize }}
           sx={equalHeight ? { display: "flex" } : undefined}
         >
-          <SummaryCard title={card.title} value={card.value} fullHeight={equalHeight} />
+          <SummaryCard
+            title={card.title}
+            value={card.value}
+            fullHeight={equalHeight}
+            subtitle={card.subtitle}
+          />
         </Grid>
       ))}
 
