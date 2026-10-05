@@ -19,6 +19,7 @@ import { CircularProgress } from "@mui/material";
 import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 import { useSnackbar } from "../../../../context/SnackbarContext";
+import BButton from "../../../common/BButton";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -115,6 +116,10 @@ const PaymentsDashboard = () => {
     getYesterdayPaymentsData();
   }, []);
 
+  const refreshCall = () => {
+    getPaymentsData();
+  };
+
   return (
     <>
       <Grid container spacing={3}>
@@ -144,49 +149,52 @@ const PaymentsDashboard = () => {
             ]}
           />
           {/* </Stack> */}
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 1, ml: "25%" }}>
+            <BButton
+              buttonName={"Refresh"}
+              functionCall={refreshCall}
+              fullWidth={false}
+              color="red"
+            />
+          </Box>
         </Grid>
         <Grid size={{ xs: 12, lg: 4 }}>
           <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
-            {activity && (
-              <Box sx={{ width: "50%" }}>
-                <ActivityCard
-                  title="Last 24 Hours"
-                  variant="split"
-                  sections={[
-                    {
-                      title: "Success",
-                      values: activity.last24Hours?.successful ?? {},
-                    },
-                    {
-                      title: "Fail",
-                      values: activity.last24Hours?.failed ?? {},
-                    },
-                  ]}
-                />
-              </Box>
-            )}
-
-            {yesterdayActivity && (
-              <Box sx={{ width: "50%" }}>
-                <ActivityCard
-                  title={`Yesterday - ${yesterdayActivity?.paymentDate}`}
-                  variant="split"
-                  sections={[
-                    {
-                      title: "Success",
-                      values: yesterdayActivity?.successful ?? {},
-                    },
-                    {
-                      title: "Fail",
-                      values: yesterdayActivity?.failed ?? {},
-                    },
-                  ]}
-                  button={true}
-                  buttonName="Re-Push"
-                  functionCall={handleClickOpen}
-                />
-              </Box>
-            )}
+            <Box sx={{ width: "50%" }}>
+              <ActivityCard
+                title="Last 24 Hours"
+                variant="split"
+                sections={[
+                  {
+                    title: "Success",
+                    values: activity?.last24Hours?.successful ?? {},
+                  },
+                  {
+                    title: "Fail",
+                    values: activity?.last24Hours?.failed ?? {},
+                  },
+                ]}
+              />
+            </Box>
+            <Box sx={{ width: "50%" }}>
+              <ActivityCard
+                title={`Yesterday - ${yesterdayActivity?.paymentDate}`}
+                variant="split"
+                sections={[
+                  {
+                    title: "Success",
+                    values: yesterdayActivity?.successful ?? {},
+                  },
+                  {
+                    title: "Fail",
+                    values: yesterdayActivity?.failed ?? {},
+                  },
+                ]}
+                button={true}
+                buttonName="Re-Push"
+                functionCall={handleClickOpen}
+              />
+            </Box>
           </Stack>
         </Grid>
       </Grid>

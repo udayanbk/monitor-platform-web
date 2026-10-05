@@ -41,7 +41,7 @@ const ActivityCard = ({
         ) : (
           entries.map(([key, value]) => (
             <Stack key={key} direction="row" justifyContent="space-between">
-              <Typography variant="body2">{key}</Typography>
+              <Typography variant="body2">{key}&nbsp;</Typography>
 
               <Typography variant="body2" fontWeight={500}>
                 {value}
@@ -59,7 +59,7 @@ const ActivityCard = ({
         <Typography variant="subtitle1" fontWeight={700}>
           {title}
         </Typography>
-        {button && <BButton buttonName={buttonName} functionCall={functionCall} />}
+        {button && <BButton buttonName={buttonName} functionCall={functionCall} fullWidth={true} />}
 
         <Divider sx={{ my: 1, borderColor: "warning.main" }} />
 
