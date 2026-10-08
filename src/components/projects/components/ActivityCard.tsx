@@ -1,4 +1,4 @@
-import { Card, CardContent, Divider, Grid, Stack, Typography } from "@mui/material";
+import { Card, CardContent, Divider, Grid, Skeleton, Stack, Typography } from "@mui/material";
 import BButton from "../../common/BButton";
 
 type ActivitySection = {
@@ -13,6 +13,7 @@ interface ActivityCardProps {
   button?: boolean;
   buttonName?: string;
   functionCall?: () => void;
+  loading?: boolean;
 }
 
 const ActivityCard = ({
@@ -22,6 +23,7 @@ const ActivityCard = ({
   button,
   buttonName = "default",
   functionCall,
+  loading = false,
 }: ActivityCardProps) => {
   const renderSection = (section: ActivitySection) => {
     const entries = Object.entries(section.values ?? {});
@@ -54,39 +56,68 @@ const ActivityCard = ({
   };
 
   return (
-    <Card elevation={3} sx={{ border: 2, borderColor: "warning.main" }}>
+    <Card
+      elevation={3}
+      sx={{
+        border: 2,
+        borderColor: "warning.main",
+        height: "100%",
+      }}
+    >
       <CardContent>
-        <Typography variant="subtitle1" fontWeight={700}>
-          {title}
-        </Typography>
-        {button && <BButton buttonName={buttonName} functionCall={functionCall} fullWidth={true} />}
+        {loading ? (
+          <>
+            <Skeleton variant="text" width="65%" height={28} />
 
-        <Divider sx={{ my: 1, borderColor: "warning.main" }} />
+            <Skeleton variant="rounded" width="100%" height={36} sx={{ mt: 1 }} />
 
-        {variant === "stacked" ? (
-          <Stack divider={<Divider />} spacing={2}>
-            {sections.map((section) => (
-              <div key={section.title}>{renderSection(section)}</div>
-            ))}
-          </Stack>
+            <Divider sx={{ my: 1, borderColor: "warning.main" }} />
+
+            <Stack spacing={1.5}>
+              <Skeleton variant="text" width="45%" height={22} />
+              <Skeleton variant="text" width="90%" height={20} />
+              <Skeleton variant="text" width="75%" height={20} />
+              <Skeleton variant="text" width="85%" height={20} />
+            </Stack>
+          </>
         ) : (
-          <Grid container>
-            {sections.map((section, index) => (
-              <Grid
-                key={section.title}
-                size={12 / sections.length}
-                sx={{
-                  px: 1.5,
-                  ...(index < sections.length - 1 && {
-                    borderRight: 1,
-                    borderColor: "warning.main",
-                  }),
-                }}
-              >
-                {renderSection(section)}
+          <>
+            <Typography variant="subtitle1" fontWeight={700}>
+              {title}
+            </Typography>
+
+            {button && (
+              <BButton buttonName={buttonName} functionCall={functionCall} fullWidth={true} />
+            )}
+
+            <Divider sx={{ my: 1, borderColor: "warning.main" }} />
+
+            {variant === "stacked" ? (
+              <Stack divider={<Divider />} spacing={2}>
+                {sections.map((section) => (
+                  <div key={section.title}>{renderSection(section)}</div>
+                ))}
+              </Stack>
+            ) : (
+              <Grid container>
+                {sections.map((section, index) => (
+                  <Grid
+                    key={section.title}
+                    size={12 / sections.length}
+                    sx={{
+                      px: 1.5,
+                      ...(index < sections.length - 1 && {
+                        borderRight: 1,
+                        borderColor: "warning.main",
+                      }),
+                    }}
+                  >
+                    {renderSection(section)}
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
+            )}
+          </>
         )}
       </CardContent>
     </Card>

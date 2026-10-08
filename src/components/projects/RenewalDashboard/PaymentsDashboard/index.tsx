@@ -1,13 +1,5 @@
 import { Box, Grid, Stack } from "@mui/material";
-
-import InvestigationSection from "./InvestigationSection";
 import { useEffect, useState } from "react";
-import { getPaymentStatus } from "../../../../services/renewalServices";
-import { getYesterdayPaymentStatus } from "../../../../services/renewalServices";
-import { repushRenewalFailedPayments } from "../../../../services/renewalServices";
-import { Summary } from "../../../common/Interfaces";
-import SummarySection from "../../components/SummarySection ";
-import ActivityCard from "../../components/ActivityCard";
 import * as React from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -19,7 +11,16 @@ import { CircularProgress } from "@mui/material";
 import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 import { useSnackbar } from "../../../../context/SnackbarContext";
+import {
+  getPaymentStatus,
+  getYesterdayPaymentStatus,
+  repushRenewalFailedPayments,
+} from "../../../../services/renewalServices";
+import { Summary } from "../../../common/Interfaces";
 import BButton from "../../../common/BButton";
+import SummarySection from "../../components/SummarySection ";
+import ActivityCard from "../../components/ActivityCard";
+import InvestigationSection from "./InvestigationSection";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -59,8 +60,11 @@ interface YesterdayActivity {
 
 const PaymentsDashboard = () => {
   const { showSnackbar } = useSnackbar();
+
+  const [loading, setLoading] = useState(true);
   const [repushLoading, setRepushLoading] = useState(false);
   const [open, setOpen] = React.useState(false);
+
   const [summary, setSummary] = useState<Summary | null>(null);
   const [activity, setActivity] = useState<Activity | null>(null);
   const [yesterdayActivity, setYesterdayActivity] = useState<YesterdayActivity | null>(null);
@@ -74,19 +78,37 @@ const PaymentsDashboard = () => {
   };
 
   const getPaymentsData = async () => {
-    const resp = await getPaymentStatus();
-    console.log("resp-ren--", resp);
-    if (resp?.success === true) {
-      setSummary(resp?.data?.summary);
-      setActivity(resp?.data?.activity);
+    try {
+      const resp = await getPaymentStatus();
+
+      if (resp?.success === true) {
+        setSummary(resp?.data?.summary);
+        setActivity(resp?.data?.activity);
+      }
+    } catch (error) {
+      console.error("Failed to fetch payment status:", error);
     }
   };
 
   const getYesterdayPaymentsData = async () => {
-    const resp = await getYesterdayPaymentStatus();
-    console.log("resp-ren-yesterday-", resp);
-    if (resp?.success === true) {
-      setYesterdayActivity(resp?.data);
+    try {
+      const resp = await getYesterdayPaymentStatus();
+
+      if (resp?.success === true) {
+        setYesterdayActivity(resp?.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch yesterday payment status:", error);
+    }
+  };
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+
+      await Promise.all([getPaymentsData(), getYesterdayPaymentsData()]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -112,20 +134,19 @@ const PaymentsDashboard = () => {
   };
 
   useEffect(() => {
-    getPaymentsData();
-    getYesterdayPaymentsData();
+    loadDashboardData();
   }, []);
 
   const refreshCall = () => {
-    getPaymentsData();
+    loadDashboardData();
   };
 
   return (
     <>
       <Grid container spacing={3}>
         <Grid size={{ xs: 12, lg: 8 }}>
-          {/* <Stack spacing={3}> */}
           <SummarySection
+            loading={loading}
             summaryCards={[
               {
                 title: "Total Search",
@@ -148,20 +169,29 @@ const PaymentsDashboard = () => {
               },
             ]}
           />
-          {/* </Stack> */}
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 1, ml: "25%" }}>
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              mt: 1,
+              ml: "25%",
+            }}
+          >
             <BButton
-              buttonName={"Refresh"}
+              buttonName="Refresh"
               functionCall={refreshCall}
               fullWidth={false}
               color="red"
             />
           </Box>
         </Grid>
+
         <Grid size={{ xs: 12, lg: 4 }}>
           <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
             <Box sx={{ width: "50%" }}>
               <ActivityCard
+                loading={loading}
                 title="Last 24 Hours"
                 variant="split"
                 sections={[
@@ -176,9 +206,11 @@ const PaymentsDashboard = () => {
                 ]}
               />
             </Box>
+
             <Box sx={{ width: "50%" }}>
               <ActivityCard
-                title={`Yesterday - ${yesterdayActivity?.paymentDate}`}
+                loading={loading}
+                title={`Yesterday - ${yesterdayActivity?.paymentDate ?? ""}`}
                 variant="split"
                 sections={[
                   {
@@ -198,7 +230,9 @@ const PaymentsDashboard = () => {
           </Stack>
         </Grid>
       </Grid>
+
       <InvestigationSection />
+
       <Dialog
         open={open}
         slots={{
@@ -210,11 +244,13 @@ const PaymentsDashboard = () => {
         role="alertdialog"
       >
         <DialogTitle>{"Repush Failed Payments ??"}</DialogTitle>
+
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
             Are you sure you want to process failed payments??
           </DialogContentText>
         </DialogContent>
+
         <DialogActions>
           <Button onClick={handleClose} disabled={repushLoading}>
             Disagree
