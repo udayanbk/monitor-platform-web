@@ -5,11 +5,13 @@ interface ButtonInterface {
   fullWidth: boolean;
   color?: string;
   functionCall?: () => void;
+  disabled?: boolean;
 }
 
-const BButton = ({ buttonName, functionCall, fullWidth, color }: ButtonInterface) => {
+const BButton = ({ buttonName, functionCall, fullWidth, color, disabled }: ButtonInterface) => {
   return (
     <Button
+      disabled={disabled}
       fullWidth={fullWidth}
       variant="outlined"
       sx={{

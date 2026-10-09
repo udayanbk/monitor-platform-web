@@ -20,7 +20,11 @@ import {
 import { getRenewalFailedLogs, getRenewalSuccessLogs } from "../../../../services/renewalServices";
 import { RecentRenewalLog } from "../../../common/Interfaces";
 
-const RecentLogsPanel = () => {
+interface RecentLogsPanelProps {
+  selectedDate?: string;
+}
+
+const RecentLogsPanel = ({ selectedDate }: RecentLogsPanelProps) => {
   const [tab, setTab] = useState(0);
   const [logResp, setLogResp] = useState<RecentRenewalLog[]>([]);
 
@@ -30,10 +34,10 @@ const RecentLogsPanel = () => {
     } else if (tab == 1) {
       getFailedLogs();
     }
-  }, [tab]);
+  }, [tab, selectedDate]);
 
   const getSuccessLogs = async () => {
-    const resp = await getRenewalSuccessLogs();
+    const resp = await getRenewalSuccessLogs({ selectedDate: selectedDate ?? "" });
     console.log("success-log--", resp);
     if (resp?.success) {
       setLogResp(resp?.data);
@@ -41,7 +45,9 @@ const RecentLogsPanel = () => {
   };
 
   const getFailedLogs = async () => {
-    const resp = await getRenewalFailedLogs();
+    const resp = await getRenewalFailedLogs({
+      selectedDate: selectedDate ?? "",
+    });
     console.log("failure-log--", resp);
     if (resp?.success) {
       setLogResp(resp?.data);

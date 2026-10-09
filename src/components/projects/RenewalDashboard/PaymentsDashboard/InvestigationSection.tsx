@@ -4,7 +4,11 @@ import RecentLogsPanel from "./RecentLogsPanel";
 import SearchPanel from "./SearchPanel";
 import { useState } from "react";
 
-const InvestigationSection = () => {
+interface InvestigationSectionProps {
+  selectedDate?: string;
+}
+
+const InvestigationSection = ({ selectedDate }: InvestigationSectionProps) => {
   const [tab, setTab] = useState(0);
 
   return (
@@ -34,7 +38,7 @@ const InvestigationSection = () => {
         <Divider sx={{ mb: 2 }} />
 
         <Box>
-          {tab === 0 && <RecentLogsPanel />}
+          {tab === 0 && <RecentLogsPanel selectedDate={selectedDate} />}
 
           {tab === 1 && <SearchPanel />}
         </Box>

@@ -11,6 +11,7 @@ import {
   Paper,
   Select,
   SelectChangeEvent,
+  Stack,
   styled,
   Table,
   TableBody,
@@ -22,12 +23,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import LinearProgress from "@mui/material/LinearProgress";
 import PolicyIcon from "@mui/icons-material/Policy";
 import React, { useState } from "react";
 import { searchRenewalLogs } from "../../../../services/renewalServices";
 import { SearchRenewalLog } from "../../../common/Interfaces";
 
 const SearchPanel = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [searchKey, setSearchKey] = useState<string>("");
   const [searchVal, setSearchVal] = useState<string>("");
   const [searchedData, setSearchedData] = useState<SearchRenewalLog>();
@@ -38,14 +41,21 @@ const SearchPanel = () => {
   };
 
   const searchLog = async () => {
-    const payload = {
-      searchKey,
-      searchVal,
-    };
-    const resp = await searchRenewalLogs(payload);
-    if (resp?.success) {
-      console.log("search response", resp?.data);
-      setSearchedData(resp?.data);
+    setLoading(true);
+    try {
+      const payload = {
+        searchKey,
+        searchVal,
+      };
+      const resp = await searchRenewalLogs(payload);
+      if (resp?.success) {
+        console.log("search response", resp?.data);
+        setSearchedData(resp?.data);
+      }
+    } catch (error) {
+      console.log("error", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -130,6 +140,7 @@ const SearchPanel = () => {
             onChange={(e) => setSearchVal(e.target.value)}
           />
           <Button
+            disabled={loading}
             variant="outlined"
             onClick={searchLog}
             sx={{ width: "20%", mt: 2, height: 35, border: "2px solid", fontWeight: "bold" }}
@@ -144,226 +155,240 @@ const SearchPanel = () => {
             overflow: "auto",
           }}
         >
-          {!searchedData ? (
+          {!searchedData && !loading ? (
             <Typography>Searched Data will be shown here...</Typography>
           ) : (
             <>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                  <TableHead>
-                    <TableRow sx={{ maxHeight: 20 }}>
-                      <StyledTableCell align="center" width={180}>
-                        Date
-                      </StyledTableCell>
-                      <StyledTableCell align="center" width={180}>
-                        Quote No
-                      </StyledTableCell>
-                      <StyledTableCell align="center" width={180}>
-                        Policy No
-                      </StyledTableCell>
-                      <StyledTableCell align="center" width={120}>
-                        Payment Done
-                      </StyledTableCell>
-                      <StyledTableCell align="center" width={120}>
-                        Amount
-                      </StyledTableCell>
-                      <StyledTableCell align="center" width={240}>
-                        Status
-                      </StyledTableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    <StyledTableRow key={searchedData?.logs?.policy_no as React.Key}>
-                      <StyledTableCell align="center">
-                        {searchedData?.logs?.updated_at}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {searchedData?.logs?.renewal_quote_number}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {searchedData?.logs?.policy_no}
-                      </StyledTableCell>
+              {loading ? (
+                <Stack sx={{ width: "100%", color: "grey.500" }} spacing={2}>
+                  <LinearProgress color="secondary" aria-label="Loading…" />
+                  <LinearProgress color="success" aria-label="Loading…" />
+                  <LinearProgress color="inherit" aria-label="Loading…" />
+                </Stack>
+              ) : (
+                <>
+                  <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                      <TableHead>
+                        <TableRow sx={{ maxHeight: 20 }}>
+                          <StyledTableCell align="center" width={180}>
+                            Date
+                          </StyledTableCell>
+                          <StyledTableCell align="center" width={180}>
+                            Quote No
+                          </StyledTableCell>
+                          <StyledTableCell align="center" width={180}>
+                            Policy No
+                          </StyledTableCell>
+                          <StyledTableCell align="center" width={120}>
+                            Payment Done
+                          </StyledTableCell>
+                          <StyledTableCell align="center" width={120}>
+                            Amount
+                          </StyledTableCell>
+                          <StyledTableCell align="center" width={240}>
+                            Status
+                          </StyledTableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <StyledTableRow key={searchedData?.logs?.policy_no as React.Key}>
+                          <StyledTableCell align="center">
+                            {searchedData?.logs?.updated_at}
+                          </StyledTableCell>
+                          <StyledTableCell align="center">
+                            {searchedData?.logs?.renewal_quote_number}
+                          </StyledTableCell>
+                          <StyledTableCell align="center">
+                            {searchedData?.logs?.policy_no}
+                          </StyledTableCell>
 
-                      <StyledTableCell align="center">
-                        {searchedData?.logs?.payment_flag === 1 ? "Yes" : "No"}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">{searchedData?.logs?.amount}</StyledTableCell>
-                      <StyledTableCell
-                        align="center"
-                        sx={{
-                          whiteSpace: "normal !important",
-                          overflow: "visible !important",
-                          textOverflow: "clip !important",
-                          wordBreak: "break-word",
-                          overflowWrap: "anywhere",
-                        }}
-                      >
-                        {searchedData?.logs?.billdesk_recon_msg}
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                  <TableHead>
-                    <TableRow>
-                      <StyledTableCell align="center">Renewal ID</StyledTableCell>
-                      <StyledTableCell align="center">Name</StyledTableCell>
-                      <StyledTableCell align="center">CON</StyledTableCell>
-                      <StyledTableCell align="center">Policy Type</StyledTableCell>
-                      <StyledTableCell align="center">Product Code</StyledTableCell>
-                      <StyledTableCell align="center">Core</StyledTableCell>
-                      <StyledTableCell align="center">Notice Status</StyledTableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    <StyledTableRow key={searchedData?.logs?.policy_no as React.Key}>
-                      <StyledTableCell align="center">
-                        {searchedData?.logs?.renewals_id}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {searchedData?.logs?.insured_name}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">{searchedData?.logs?.con}</StyledTableCell>
-                      <StyledTableCell align="center">
-                        {searchedData?.logs?.policy_type}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {searchedData?.logs?.product_code}
-                      </StyledTableCell>
-                      <StyledTableCell align="center">
-                        {searchedData?.logs?.target_core_system}
-                      </StyledTableCell>
-                      <StyledTableCell
-                        align="center"
-                        sx={{
-                          whiteSpace: "normal !important",
-                          overflow: "visible !important",
-                          textOverflow: "clip !important",
-                          wordBreak: "break-word",
-                          overflowWrap: "anywhere",
-                        }}
-                      >
-                        {searchedData?.logs?.renewal_notice_status}
-                      </StyledTableCell>
-                    </StyledTableRow>
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <Typography variant="h6" padding={1}>
-                Service Logs
-              </Typography>
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                  <TableHead>
-                    <TableRow sx={{ maxHeight: 20 }}>
-                      <StyledTableCell align="center" width={"15%"}>
-                        Time Stamp
-                      </StyledTableCell>
-                      <StyledTableCell align="center" width={"30%"}>
-                        Service Url
-                      </StyledTableCell>
-                      <StyledTableCell align="center" width={"55%"}>
-                        Request & Response
-                      </StyledTableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {searchedData?.serviceLog?.map((row) => {
-                      const rowKey = row?.counter;
-                      const isExpanded = expandedRow === rowKey;
-
-                      return (
-                        <React.Fragment key={rowKey}>
-                          {/* Normal compact row */}
-                          <StyledTableRow
-                            hover
-                            onClick={() => setExpandedRow(isExpanded ? null : rowKey)}
-                            sx={{ cursor: "pointer" }}
+                          <StyledTableCell align="center">
+                            {searchedData?.logs?.payment_flag === 1 ? "Yes" : "No"}
+                          </StyledTableCell>
+                          <StyledTableCell align="center">
+                            {searchedData?.logs?.amount}
+                          </StyledTableCell>
+                          <StyledTableCell
+                            align="center"
+                            sx={{
+                              whiteSpace: "normal !important",
+                              overflow: "visible !important",
+                              textOverflow: "clip !important",
+                              wordBreak: "break-word",
+                              overflowWrap: "anywhere",
+                            }}
                           >
-                            <StyledTableCell align="center">
-                              {row?.response_timestamp}
-                            </StyledTableCell>
+                            {searchedData?.logs?.billdesk_recon_msg}
+                          </StyledTableCell>
+                        </StyledTableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                      <TableHead>
+                        <TableRow>
+                          <StyledTableCell align="center">Renewal ID</StyledTableCell>
+                          <StyledTableCell align="center">Name</StyledTableCell>
+                          <StyledTableCell align="center">CON</StyledTableCell>
+                          <StyledTableCell align="center">Policy Type</StyledTableCell>
+                          <StyledTableCell align="center">Product Code</StyledTableCell>
+                          <StyledTableCell align="center">Core</StyledTableCell>
+                          <StyledTableCell align="center">Notice Status</StyledTableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        <StyledTableRow key={searchedData?.logs?.policy_no as React.Key}>
+                          <StyledTableCell align="center">
+                            {searchedData?.logs?.renewals_id}
+                          </StyledTableCell>
+                          <StyledTableCell align="center">
+                            {searchedData?.logs?.insured_name}
+                          </StyledTableCell>
+                          <StyledTableCell align="center">
+                            {searchedData?.logs?.con}
+                          </StyledTableCell>
+                          <StyledTableCell align="center">
+                            {searchedData?.logs?.policy_type}
+                          </StyledTableCell>
+                          <StyledTableCell align="center">
+                            {searchedData?.logs?.product_code}
+                          </StyledTableCell>
+                          <StyledTableCell align="center">
+                            {searchedData?.logs?.target_core_system}
+                          </StyledTableCell>
+                          <StyledTableCell
+                            align="center"
+                            sx={{
+                              whiteSpace: "normal !important",
+                              overflow: "visible !important",
+                              textOverflow: "clip !important",
+                              wordBreak: "break-word",
+                              overflowWrap: "anywhere",
+                            }}
+                          >
+                            {searchedData?.logs?.renewal_notice_status}
+                          </StyledTableCell>
+                        </StyledTableRow>
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <Typography variant="h6" padding={1}>
+                    Service Logs
+                  </Typography>
+                  <TableContainer component={Paper}>
+                    <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                      <TableHead>
+                        <TableRow sx={{ maxHeight: 20 }}>
+                          <StyledTableCell align="center" width={"15%"}>
+                            Time Stamp
+                          </StyledTableCell>
+                          <StyledTableCell align="center" width={"30%"}>
+                            Service Url
+                          </StyledTableCell>
+                          <StyledTableCell align="center" width={"55%"}>
+                            Request & Response
+                          </StyledTableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {searchedData?.serviceLog?.map((row) => {
+                          const rowKey = row?.counter;
+                          const isExpanded = expandedRow === rowKey;
 
-                            <StyledTableCell align="center">
-                              {/* {isExpanded ? "▲" : "▼"} */}
-                              {row?.apiService}
-                            </StyledTableCell>
+                          return (
+                            <React.Fragment key={rowKey}>
+                              {/* Normal compact row */}
+                              <StyledTableRow
+                                hover
+                                onClick={() => setExpandedRow(isExpanded ? null : rowKey)}
+                                sx={{ cursor: "pointer" }}
+                              >
+                                <StyledTableCell align="center">
+                                  {row?.response_timestamp}
+                                </StyledTableCell>
 
-                            <StyledTableCell align="center">Click to view logs</StyledTableCell>
-                          </StyledTableRow>
+                                <StyledTableCell align="center">
+                                  {/* {isExpanded ? "▲" : "▼"} */}
+                                  {row?.apiService}
+                                </StyledTableCell>
 
-                          {/* Expanded row */}
-                          {isExpanded && (
-                            <StyledTableRow>
-                              <StyledTableCell colSpan={3} sx={{ padding: 0, borderBottom: 0 }}>
-                                <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                                  <Box sx={{ p: 2 }}>
-                                    <Box
-                                      sx={{
-                                        display: "flex",
-                                        gap: 2,
-                                        alignItems: "flex-start",
-                                      }}
-                                    >
-                                      {/* Request */}
-                                      <Box sx={{ flex: 1 }}>
-                                        <Typography fontWeight={700} mb={1}>
-                                          Request
-                                        </Typography>
+                                <StyledTableCell align="center">Click to view logs</StyledTableCell>
+                              </StyledTableRow>
 
+                              {/* Expanded row */}
+                              {isExpanded && (
+                                <StyledTableRow>
+                                  <StyledTableCell colSpan={3} sx={{ padding: 0, borderBottom: 0 }}>
+                                    <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                                      <Box sx={{ p: 2 }}>
                                         <Box
-                                          component="pre"
                                           sx={{
-                                            margin: 0,
-                                            padding: 2,
-                                            backgroundColor: "#f5f5f5",
-                                            borderRadius: 1,
-                                            overflow: "auto",
-                                            maxHeight: 400,
-                                            fontSize: "12px",
-                                            textAlign: "left",
+                                            display: "flex",
+                                            gap: 2,
+                                            alignItems: "flex-start",
                                           }}
                                         >
-                                          {JSON.stringify(row?.request_json, null, 2)}
+                                          {/* Request */}
+                                          <Box sx={{ flex: 1 }}>
+                                            <Typography fontWeight={700} mb={1}>
+                                              Request
+                                            </Typography>
+
+                                            <Box
+                                              component="pre"
+                                              sx={{
+                                                margin: 0,
+                                                padding: 2,
+                                                backgroundColor: "#f5f5f5",
+                                                borderRadius: 1,
+                                                overflow: "auto",
+                                                maxHeight: 400,
+                                                fontSize: "12px",
+                                                textAlign: "left",
+                                              }}
+                                            >
+                                              {JSON.stringify(row?.request_json, null, 2)}
+                                            </Box>
+                                          </Box>
+
+                                          {/* Response */}
+                                          <Box sx={{ flex: 1 }}>
+                                            <Typography fontWeight={700} mb={1}>
+                                              Response
+                                            </Typography>
+
+                                            <Box
+                                              component="pre"
+                                              sx={{
+                                                margin: 0,
+                                                padding: 2,
+                                                backgroundColor: "#f5f5f5",
+                                                borderRadius: 1,
+                                                overflow: "auto",
+                                                maxHeight: 400,
+                                                fontSize: "12px",
+                                                textAlign: "left",
+                                              }}
+                                            >
+                                              {JSON.stringify(row?.response_json, null, 2)}
+                                            </Box>
+                                          </Box>
                                         </Box>
                                       </Box>
-
-                                      {/* Response */}
-                                      <Box sx={{ flex: 1 }}>
-                                        <Typography fontWeight={700} mb={1}>
-                                          Response
-                                        </Typography>
-
-                                        <Box
-                                          component="pre"
-                                          sx={{
-                                            margin: 0,
-                                            padding: 2,
-                                            backgroundColor: "#f5f5f5",
-                                            borderRadius: 1,
-                                            overflow: "auto",
-                                            maxHeight: 400,
-                                            fontSize: "12px",
-                                            textAlign: "left",
-                                          }}
-                                        >
-                                          {JSON.stringify(row?.response_json, null, 2)}
-                                        </Box>
-                                      </Box>
-                                    </Box>
-                                  </Box>
-                                </Collapse>
-                              </StyledTableCell>
-                            </StyledTableRow>
-                          )}
-                        </React.Fragment>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                                    </Collapse>
+                                  </StyledTableCell>
+                                </StyledTableRow>
+                              )}
+                            </React.Fragment>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </>
+              )}
             </>
           )}
         </Box>

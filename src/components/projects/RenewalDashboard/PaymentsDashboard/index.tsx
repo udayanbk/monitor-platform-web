@@ -12,6 +12,7 @@ import Slide from "@mui/material/Slide";
 import { TransitionProps } from "@mui/material/transitions";
 import { useSnackbar } from "../../../../context/SnackbarContext";
 import {
+  // get24HrPaymentStatus,
   getPaymentStatus,
   getYesterdayPaymentStatus,
   repushRenewalFailedPayments,
@@ -21,6 +22,8 @@ import BButton from "../../../common/BButton";
 import SummarySection from "../../components/SummarySection ";
 import ActivityCard from "../../components/ActivityCard";
 import InvestigationSection from "./InvestigationSection";
+import dayjs, { Dayjs } from "dayjs";
+import DateSelector from "../../../common/DateSelector";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -36,20 +39,20 @@ interface ChannelStats extends Record<string, number> {
   EBAO: number;
 }
 
-interface Activity {
-  lastHour: {
-    successful: ChannelStats;
-    failed: ChannelStats;
-  };
-  last24Hours: {
-    successful: ChannelStats;
-    failed: ChannelStats;
-  };
-  last30Days: {
-    successful: ChannelStats;
-    failed: ChannelStats;
-  };
-}
+// interface Activity {
+//   lastHour: {
+//     successful: ChannelStats;
+//     failed: ChannelStats;
+//   };
+//   last24Hours: {
+//     successful: ChannelStats;
+//     failed: ChannelStats;
+//   };
+//   last30Days: {
+//     successful: ChannelStats;
+//     failed: ChannelStats;
+//   };
+// }
 
 interface YesterdayActivity {
   paymentDate: string;
@@ -66,8 +69,9 @@ const PaymentsDashboard = () => {
   const [open, setOpen] = React.useState(false);
 
   const [summary, setSummary] = useState<Summary | null>(null);
-  const [activity, setActivity] = useState<Activity | null>(null);
+  // const [activity, setActivity] = useState<Activity | null>(null);
   const [yesterdayActivity, setYesterdayActivity] = useState<YesterdayActivity | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -79,21 +83,37 @@ const PaymentsDashboard = () => {
 
   const getPaymentsData = async () => {
     try {
-      const resp = await getPaymentStatus();
-
+      const payload = {
+        selectedDate: selectedDate.format("YYYY-MM-DD"),
+      };
+      const resp = await getPaymentStatus(payload);
+      console.log("getPaymentsData--resp--", resp);
       if (resp?.success === true) {
         setSummary(resp?.data?.summary);
-        setActivity(resp?.data?.activity);
+        // setActivity(resp?.data?.activity);
       }
     } catch (error) {
       console.error("Failed to fetch payment status:", error);
     }
   };
 
+  // const get24HrPaymentsData = async () => {
+  //   try {
+  //     const resp = await get24HrPaymentStatus();
+  //     console.log("get24HrPaymentsData--resp--", resp);
+  //     if (resp?.success === true) {
+  //       // setSummary(resp?.data?.summary);
+  //       setActivity(resp?.data?.activity);
+  //     }
+  //   } catch (error) {
+  //     console.error("Failed to fetch payment status:", error);
+  //   }
+  // };
+
   const getYesterdayPaymentsData = async () => {
     try {
       const resp = await getYesterdayPaymentStatus();
-
+      console.log("getYesterdayPaymentsData--resp--", resp);
       if (resp?.success === true) {
         setYesterdayActivity(resp?.data);
       }
@@ -106,7 +126,20 @@ const PaymentsDashboard = () => {
     try {
       setLoading(true);
 
-      await Promise.all([getPaymentsData(), getYesterdayPaymentsData()]);
+      await Promise.all([
+        getPaymentsData(),
+        // get24HrPaymentsData(),
+        getYesterdayPaymentsData(),
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const selectDayLoadDashboardData = async () => {
+    try {
+      setLoading(true);
+      await getPaymentsData();
     } finally {
       setLoading(false);
     }
@@ -137,38 +170,67 @@ const PaymentsDashboard = () => {
     loadDashboardData();
   }, []);
 
+  useEffect(() => {
+    selectDayLoadDashboardData();
+  }, [selectedDate]);
+
   const refreshCall = () => {
-    loadDashboardData();
+    setSelectedDate(dayjs());
   };
 
   return (
     <>
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, lg: 8 }}>
-          <SummarySection
-            loading={loading}
-            summaryCards={[
-              {
-                title: "Total Search",
-                value: summary?.totalSearch ?? "--",
-              },
-              {
-                title: "Total no of Payments",
-                value: summary?.totalPayments ?? "--",
-                subtitle: "Today",
-              },
-            ]}
-            splitCards={[
-              {
-                title: "Success Today",
-                data: summary?.successful,
-              },
-              {
-                title: "Failed Today",
-                data: summary?.failed,
-              },
-            ]}
-          />
+        <Grid size={{ xs: 12, lg: 9 }}>
+          <Grid container spacing={2}>
+            {/* Select Date */}
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <DateSelector selectedDate={selectedDate} onDateChange={setSelectedDate} />
+            </Grid>
+
+            {/* Total Payments */}
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <SummarySection
+                columns={1}
+                loading={loading}
+                summaryCards={[
+                  {
+                    title: "Total no of Payments",
+                    value: summary?.totalPayments ?? "--",
+                    subtitle: "Today",
+                  },
+                ]}
+              />
+            </Grid>
+
+            {/* Success Today */}
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <SummarySection
+                columns={1}
+                loading={loading}
+                splitCards={[
+                  {
+                    title: `Success Today ${summary?.totalSuccess ?? 0}`,
+                    data: summary?.successful,
+                  },
+                ]}
+              />
+            </Grid>
+
+            {/* Failed Today */}
+            <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+              <SummarySection
+                columns={1}
+                loading={loading}
+                splitCards={[
+                  {
+                    title: `Failed Today ${summary?.totalFailed ?? 0}`,
+                    data: summary?.failed,
+                  },
+                ]}
+              />
+            </Grid>
+          </Grid>
 
           <Box
             sx={{
@@ -183,13 +245,14 @@ const PaymentsDashboard = () => {
               functionCall={refreshCall}
               fullWidth={false}
               color="red"
+              disabled={loading}
             />
           </Box>
         </Grid>
 
-        <Grid size={{ xs: 12, lg: 4 }}>
+        <Grid size={{ xs: 12, lg: 3 }}>
           <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
-            <Box sx={{ width: "50%" }}>
+            {/* <Box sx={{ width: "50%" }}>
               <ActivityCard
                 loading={loading}
                 title="Last 24 Hours"
@@ -205,9 +268,9 @@ const PaymentsDashboard = () => {
                   },
                 ]}
               />
-            </Box>
+            </Box> */}
 
-            <Box sx={{ width: "50%" }}>
+            <Box sx={{ width: "100%" }}>
               <ActivityCard
                 loading={loading}
                 title={`Yesterday - ${yesterdayActivity?.paymentDate ?? ""}`}
@@ -231,7 +294,7 @@ const PaymentsDashboard = () => {
         </Grid>
       </Grid>
 
-      <InvestigationSection />
+      <InvestigationSection selectedDate={selectedDate.format("YYYY-MM-DD")} />
 
       <Dialog
         open={open}

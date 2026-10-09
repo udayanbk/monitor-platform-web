@@ -1,5 +1,7 @@
 export interface Summary {
   totalPayments: number;
+  totalSuccess: string;
+  totalFailed: string;
   totalSearch: number;
   successful: Record<string, number>;
   failed: Record<string, number>;
