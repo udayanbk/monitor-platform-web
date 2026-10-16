@@ -8,43 +8,17 @@ import {
 } from "../../../services/general.service";
 import ReportsTable from "./ReportsTable";
 import { useSnackbar } from "../../../context/SnackbarContext";
-
-interface ReportChannel {
-  enabled: boolean;
-}
+import { Report } from "../../common/Interfaces";
 
 type OkFunction = "UpdateMode" | "SendReport" | "GetLog";
 type UpdatingMode = "MANUAL" | "SCHEDULED" | "PENDING";
-
-interface ReportChannels {
-  EMAIL?: ReportChannel;
-  WHATSAPP?: ReportChannel;
-  SMS?: ReportChannel;
-  CALL?: ReportChannel;
-}
-
-interface Report {
-  id: number;
-  report_code: string;
-  report_name: string;
-  project: string;
-  description?: string;
-  mode: "SCHEDULED" | "MANUAL";
-  schedule?: string | null;
-  channels: ReportChannels;
-  enabled: number;
-  last_sent_at?: string | null;
-  last_triggered_by?: "SCHEDULED" | "MANUAL" | null;
-  last_channel?: string | null;
-  last_status?: "SUCCESS" | "FAILED" | "IN_PROGRESS" | null;
-}
-
 type ChannelType = "EMAIL" | "CALL" | "WHATSAPP" | "SMS";
 
 const DailyReports = () => {
   const { showSnackbar } = useSnackbar();
   const limit = 7;
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [reports, setReports] = useState<Report[] | null>(null);
@@ -168,6 +142,9 @@ const DailyReports = () => {
           handleActionFunction={handleActionFunction}
           setChannelType={setChannelType}
           channelType={channelType}
+          settingsOpen={settingsOpen}
+          setSettingsOpen={setSettingsOpen}
+          onSaved={getReportsData}
         />
       )}
       <Pagination

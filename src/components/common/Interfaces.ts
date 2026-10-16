@@ -84,3 +84,43 @@ export interface ReportData {
   status: string;
   channel: string;
 }
+
+interface ReportChannel {
+  enabled: boolean;
+}
+
+export interface ReportChannels {
+  EMAIL?: ReportChannel | boolean;
+  WHATSAPP?: ReportChannel | boolean;
+  SMS?: ReportChannel | boolean;
+  CALL?: ReportChannel | boolean;
+}
+
+export interface Report {
+  id: number;
+  report_code: string;
+  report_name: string;
+  project: string;
+  description?: string;
+  mode: "SCHEDULED" | "MANUAL" | "PENDING";
+  schedule?: string | null;
+  channels: ReportChannels;
+  enabled: number;
+  update_setting: number;
+  last_sent_at?: string | null;
+  last_triggered_by?: "SCHEDULED" | "MANUAL" | null;
+  last_channel?: string | null;
+  last_status?: "SUCCESS" | "FAILED" | "IN_PROGRESS" | null;
+  receiver_to?: string[];
+  receiver_cc?: string[];
+}
+
+export interface SettingPayload {
+  id: number;
+  report_code: string;
+  mode: "SCHEDULED" | "MANUAL" | "PENDING";
+  schedule: string | undefined;
+  subject: string;
+  receiverTo: string[];
+  receiverCc: string[];
+}

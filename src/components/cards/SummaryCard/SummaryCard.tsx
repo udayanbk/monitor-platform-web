@@ -9,6 +9,7 @@ interface SummaryCardProps {
   height?: number;
   icon?: ReactNode;
   fullHeight?: boolean;
+  action?: React.ReactNode;
 }
 
 const SummaryCard = ({
@@ -18,6 +19,7 @@ const SummaryCard = ({
   icon,
   height,
   fullHeight = false,
+  action,
 }: SummaryCardProps) => {
   return (
     <Card
@@ -39,14 +41,20 @@ const SummaryCard = ({
           {icon}
         </Box>
 
-        <Typography
-          variant="h4"
+        <Box
           sx={{
-            fontWeight: 700,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 1,
           }}
         >
-          {value}
-        </Typography>
+          <Typography variant="h4" fontWeight={600}>
+            {value}
+          </Typography>
+
+          {action && <Box sx={{ flexShrink: 0 }}>{action}</Box>}
+        </Box>
 
         {subtitle && (
           <Typography variant="body2" color="text.secondary" mt={1}>

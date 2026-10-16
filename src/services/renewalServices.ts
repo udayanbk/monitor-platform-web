@@ -19,5 +19,12 @@ export const getRenewalFailedLogs = async (payload: Record<string, string>) =>
 export const searchRenewalLogs = async (payload: Record<string, string>) =>
   apiRequest(api.post("/projects/renewal/logs/search", payload));
 
+export const getServiceLog = async (payload: Record<string, string>) =>
+  apiRequest(
+    api.post("/projects/renewal/logs/download", payload, {
+      responseType: "blob",
+    }),
+  );
+
 export const repushRenewalFailedPayments = async () =>
   apiRequest(api.post("/projects/renewal/failed/repush", {}, { timeout: 12000 }));

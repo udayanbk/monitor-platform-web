@@ -1,4 +1,4 @@
-import { Report } from "./ReportsTable";
+import { Report } from "../../common/Interfaces";
 
 export const getProjectStyles = (project: string) => {
   switch (project.toUpperCase()) {

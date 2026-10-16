@@ -1,11 +1,13 @@
 import { Grid, Skeleton } from "@mui/material";
 import SummaryCard from "../../cards/SummaryCard";
 import SplitSummaryCard from "../../cards/SplitSummaryCard";
+import { ReactNode } from "react";
 
 interface SummaryCardItem {
   title: string;
   subtitle?: string;
   value: number | string;
+  action?: ReactNode;
 }
 
 interface SplitSummaryCardItem {
@@ -69,6 +71,7 @@ const SummarySection = ({
             value={card.value}
             fullHeight={equalHeight}
             subtitle={card.subtitle}
+            action={card.action}
           />
         </Grid>
       ))}

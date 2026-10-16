@@ -1,4 +1,4 @@
-import { Box, Grid, Stack } from "@mui/material";
+import { Box, Grid, IconButton, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import * as React from "react";
 import Button from "@mui/material/Button";
@@ -24,6 +24,7 @@ import ActivityCard from "../../components/ActivityCard";
 import InvestigationSection from "./InvestigationSection";
 import dayjs, { Dayjs } from "dayjs";
 import DateSelector from "../../../common/DateSelector";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -178,6 +179,36 @@ const PaymentsDashboard = () => {
     setSelectedDate(dayjs());
   };
 
+  const handleCopyStatistics = async () => {
+    const currentTime = new Date().toLocaleTimeString("en-GB", {
+      timeZone: "Asia/Kolkata",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
+    });
+
+    const ebaoTotal = (summary?.successful?.EBAO ?? 0) + (summary?.failed?.EBAO ?? 0);
+    const bancsTotal = (summary?.successful?.BANCS ?? 0) + (summary?.failed?.BANCS ?? 0);
+
+    const reportText = `${selectedDate.format("DD MMMM YYYY")} | Insta-Renew ${currentTime}
+
+Total Ebao Successful Payments = ${ebaoTotal}
+Ebao Total Policy Issued: ${summary?.successful?.EBAO ?? 0}
+Ebao Total failed policy: ${summary?.failed?.EBAO ?? 0}
+
+Total Bancs successful payments = ${bancsTotal}
+Bancs Total policy Issued: ${summary?.successful?.BANCS ?? 0}
+Bancs Total failed policy: ${summary?.failed?.BANCS ?? 0}`;
+
+    try {
+      await navigator.clipboard.writeText(reportText);
+      console.log("Report copied to clipboard");
+    } catch (error) {
+      console.error("Failed to copy report:", error);
+    }
+  };
+
   return (
     <>
       <Grid container spacing={3}>
@@ -198,6 +229,16 @@ const PaymentsDashboard = () => {
                     title: "Total no of Payments",
                     value: summary?.totalPayments ?? "--",
                     subtitle: "Today",
+                    action: (
+                      <IconButton
+                        size="medium"
+                        color="primary"
+                        aria-label="View payment details"
+                        onClick={handleCopyStatistics}
+                      >
+                        <ContentCopyIcon fontSize="large" />
+                      </IconButton>
+                    ),
                   },
                 ]}
               />

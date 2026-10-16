@@ -6,6 +6,7 @@ import {
   CardContent,
   Collapse,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -21,18 +22,21 @@ import {
   TableHead,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
+import DownloadIcon from "@mui/icons-material/Download";
 import LinearProgress from "@mui/material/LinearProgress";
 import PolicyIcon from "@mui/icons-material/Policy";
 import React, { useState } from "react";
-import { searchRenewalLogs } from "../../../../services/renewalServices";
+import { getServiceLog, searchRenewalLogs } from "../../../../services/renewalServices";
 import { SearchRenewalLog } from "../../../common/Interfaces";
 
 const SearchPanel = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [searchKey, setSearchKey] = useState<string>("");
   const [searchVal, setSearchVal] = useState<string>("");
+  const [quoteNo, setQuoteNo] = useState<string>("");
   const [searchedData, setSearchedData] = useState<SearchRenewalLog>();
   const [expandedRow, setExpandedRow] = useState<string | number | null>(null);
   const handleChange = (event: SelectChangeEvent) => {
@@ -51,11 +55,35 @@ const SearchPanel = () => {
       if (resp?.success) {
         console.log("search response", resp?.data);
         setSearchedData(resp?.data);
+        setQuoteNo(resp?.data?.logs?.renewal_quote_number);
       }
     } catch (error) {
       console.log("error", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const downloadServiceLog = async () => {
+    try {
+      const blob = await getServiceLog({ quoteNo });
+      console.log("Is Blob:", blob instanceof Blob);
+      console.log("File size:", blob.size);
+      if (!(blob instanceof Blob) || !blob.size) {
+        throw new Error("Invalid or empty Excel response");
+      }
+
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `Service_Logs_${quoteNo}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+    } catch (error) {
+      console.error("Service log download failed:", error);
     }
   };
 
@@ -274,9 +302,19 @@ const SearchPanel = () => {
                       </TableBody>
                     </Table>
                   </TableContainer>
-                  <Typography variant="h6" padding={1}>
-                    Service Logs
-                  </Typography>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                    }}
+                  >
+                    <Typography variant="h6" sx={{ p: 1 }}>
+                      Service Logs
+                    </Typography>
+                  </Box>
                   <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 700 }} aria-label="customized table">
                       <TableHead>
@@ -287,8 +325,24 @@ const SearchPanel = () => {
                           <StyledTableCell align="center" width={"30%"}>
                             Service Url
                           </StyledTableCell>
-                          <StyledTableCell align="center" width={"55%"}>
-                            Request & Response
+                          <StyledTableCell align="center" width="55%">
+                            <Box sx={{ position: "relative", width: "100%", textAlign: "center" }}>
+                              <Typography>Request Response</Typography>
+                              <Tooltip title="Download Logs" sx={{ fontSize: "25px" }}>
+                                <IconButton
+                                  size="small"
+                                  sx={{
+                                    position: "absolute",
+                                    right: 25,
+                                    top: "50%",
+                                    transform: "translateY(-50%)",
+                                  }}
+                                  onClick={downloadServiceLog}
+                                >
+                                  <DownloadIcon fontSize="medium" htmlColor="white" />
+                                </IconButton>
+                              </Tooltip>
+                            </Box>
                           </StyledTableCell>
                         </TableRow>
                       </TableHead>

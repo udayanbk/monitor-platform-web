@@ -20,43 +20,17 @@ import CallIcon from "@mui/icons-material/Call";
 import SmsIcon from "@mui/icons-material/Sms";
 import { Menu, MenuItem } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import ConstructionTwoToneIcon from "@mui/icons-material/ConstructionTwoTone";
 import CheckIcon from "@mui/icons-material/Check";
 import { getChannelStyles, getModeStyles, getProjectStyles } from "./styles";
 import { ReactElement, useState } from "react";
 import SlideDialog from "../../common/SlideDialog";
-import { ReportData } from "../../common/Interfaces";
+import { Report, ReportChannels, ReportData } from "../../common/Interfaces";
 import { getSentReportLog } from "../../../services/general.service";
-
-interface ReportChannel {
-  enabled: boolean;
-}
+import ReportSettingsDialog from "../components/ReportSettingsDialog";
 
 type OkFunction = "UpdateMode" | "SendReport" | "GetLog";
 type UpdatingMode = "MANUAL" | "SCHEDULED" | "PENDING";
-
-interface ReportChannels {
-  EMAIL?: ReportChannel | boolean;
-  WHATSAPP?: ReportChannel | boolean;
-  SMS?: ReportChannel | boolean;
-  CALL?: ReportChannel | boolean;
-}
-
-export interface Report {
-  id: number;
-  report_code: string;
-  report_name: string;
-  project: string;
-  description?: string;
-  mode: "SCHEDULED" | "MANUAL" | "PENDING";
-  schedule?: string | null;
-  channels: ReportChannels;
-  enabled: number;
-  last_sent_at?: string | null;
-  last_triggered_by?: "SCHEDULED" | "MANUAL" | null;
-  last_channel?: string | null;
-  last_status?: "SUCCESS" | "FAILED" | "IN_PROGRESS" | null;
-}
-
 type ChannelType = "EMAIL" | "CALL" | "WHATSAPP" | "SMS";
 
 interface ReportsTableProps {
@@ -71,6 +45,9 @@ interface ReportsTableProps {
   handleActionFunction: (x: number) => void;
   channelType: ChannelType;
   setChannelType: (x: ChannelType) => void;
+  settingsOpen: boolean;
+  setSettingsOpen: (x: boolean) => void;
+  onSaved: () => void | Promise<void>;
 }
 
 const getChannelIcon = (channel: ChannelType): ReactElement | undefined => {
@@ -125,6 +102,9 @@ const ReportsTable = ({
   handleActionFunction,
   setChannelType,
   // sentReportsData,
+  settingsOpen,
+  setSettingsOpen,
+  onSaved,
 }: ReportsTableProps) => {
   const [modeAnchorEl, setModeAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
@@ -474,6 +454,24 @@ const ReportsTable = ({
                         >
                           <HistoryIcon sx={{ fontSize: 38 }} />
                         </Avatar>
+                        <Avatar
+                          sx={{
+                            width: 50,
+                            height: 50,
+                            bgcolor: "orange",
+                            color: "black",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            // setDialogType("history");
+                            // setApiCallReportCode(report?.report_code);
+                            // handleViewHistory(report);
+                            setSelectedReport(report);
+                            setSettingsOpen(true);
+                          }}
+                        >
+                          <ConstructionTwoToneIcon sx={{ fontSize: 38 }} />
+                        </Avatar>
                       </Stack>
                     </TableCell>
                   </TableRow>
@@ -528,6 +526,14 @@ const ReportsTable = ({
         tableData={sentReportsData}
         dialogType={dialogType}
       />
+      {selectedReport && (
+        <ReportSettingsDialog
+          open={settingsOpen}
+          handleClose={() => setSettingsOpen(false)}
+          report={selectedReport}
+          onSaved={onSaved}
+        />
+      )}
     </>
   );
 };
