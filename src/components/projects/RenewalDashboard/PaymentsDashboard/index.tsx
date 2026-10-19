@@ -1,4 +1,4 @@
-import { Box, Grid, IconButton, Stack } from "@mui/material";
+import { Box, Grid, IconButton, Stack, Tooltip } from "@mui/material";
 import { useEffect, useState } from "react";
 import * as React from "react";
 import Button from "@mui/material/Button";
@@ -73,6 +73,7 @@ const PaymentsDashboard = () => {
   // const [activity, setActivity] = useState<Activity | null>(null);
   const [yesterdayActivity, setYesterdayActivity] = useState<YesterdayActivity | null>(null);
   const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
+  const [isTodayFlag, setIsTodayFlag] = useState<Boolean>(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -173,6 +174,7 @@ const PaymentsDashboard = () => {
 
   useEffect(() => {
     selectDayLoadDashboardData();
+    selectedDate.isSame(dayjs(), "day") ? setIsTodayFlag(true) : setIsTodayFlag(false);
   }, [selectedDate]);
 
   const refreshCall = () => {
@@ -180,13 +182,15 @@ const PaymentsDashboard = () => {
   };
 
   const handleCopyStatistics = async () => {
-    const currentTime = new Date().toLocaleTimeString("en-GB", {
-      timeZone: "Asia/Kolkata",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false,
-    });
+    const currentTime = !isTodayFlag
+      ? "23:59:59"
+      : new Date().toLocaleTimeString("en-GB", {
+          timeZone: "Asia/Kolkata",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        });
 
     const ebaoTotal = (summary?.successful?.EBAO ?? 0) + (summary?.failed?.EBAO ?? 0);
     const bancsTotal = (summary?.successful?.BANCS ?? 0) + (summary?.failed?.BANCS ?? 0);
@@ -230,14 +234,16 @@ Bancs Total failed policy: ${summary?.failed?.BANCS ?? 0}`;
                     value: summary?.totalPayments ?? "--",
                     subtitle: "Today",
                     action: (
-                      <IconButton
-                        size="medium"
-                        color="primary"
-                        aria-label="View payment details"
-                        onClick={handleCopyStatistics}
-                      >
-                        <ContentCopyIcon fontSize="large" />
-                      </IconButton>
+                      <Tooltip title="Copy Payment Data">
+                        <IconButton
+                          size="medium"
+                          color="primary"
+                          aria-label="View payment details"
+                          onClick={handleCopyStatistics}
+                        >
+                          <ContentCopyIcon fontSize="large" />
+                        </IconButton>
+                      </Tooltip>
                     ),
                   },
                 ]}
